@@ -1,0 +1,17 @@
+name: users-management
+recipe: lamp
+config:
+  php: "8.1"
+  webroot: .
+  xdebug: true
+services:
+  appserver:
+    type: "php:8.1"
+  phpmyadmin:
+    type: phpmyadmin
+  database:
+    type: "mysql:5.7"
+    creds:
+      user: account_management
+      password: account_management
+      database: account_management
