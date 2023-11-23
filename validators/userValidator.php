@@ -1,6 +1,7 @@
 <?php
 
     require_once(__DIR__ . '/../config/config.php');
+    require_once(__DIR__ . '/../object/user.php');
 
     function userExists($email) {
         $dbcon = new Database(); 
@@ -53,6 +54,35 @@
         }
         if (empty($errors)) {
             return array('success' => true, 'data' => $data);
+        } else {
+            return array('success' => false, 'errors' => $errors);
+        }
+    }
+
+    function validateLogin($data, $requiredFields) {
+        $user = new User();
+        $result = $user->getUserInfo($data['email']);
+
+        $errors = array();
+        $default_error = 'These credentials do not match our records.'; 
+        if(userExists($data['email'])) {
+            $hashedPassword = $result['password'];
+
+            if (password_verify($data['password'], $hashedPassword)) {
+                // Throw session to frontend.
+
+            } else {
+                $errors['email'] = $default_error; 
+                $errors['password'] = $default_error; 
+            }
+        }else {
+            $errors['email'] = $default_error; 
+            $errors['password'] = $default_error; 
+        }
+
+        if (empty($errors)) {
+            return array('success' => true); 
+            // return array('success' => true, 'data' => $data);
         } else {
             return array('success' => false, 'errors' => $errors);
         }

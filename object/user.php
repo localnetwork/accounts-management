@@ -50,25 +50,24 @@
         }
 
         public function userLogin($email, $password) {
-            $sql = "call sp_userLoginPost(:p_email, :p_password)";
+            $sql = "CALL sp_userLoginPost(:p_email, :p_password)";
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':p_email', $email); 
             $stmt->bindParam(':p_password', $password); 
-            $stmt->execute();
-
+            $stmt->execute(); 
             try {
-                $stmt->execute(); 
-                if(isset($stmt)) {
-                    return 1; 
-                }else {
-                    return 0; 
-                }
-            }catch(PDOException $e) {
-                $this->db->rollback();
-                echo "Error: " . $e->getMessage();
-                return -1; 
-            } 
-        }
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+                if ($result) {
+                    return json_encode(['success' => true, 'message' => 'Login successful.']); 
+                } else {
+                    // Handle the case when no results are returned
+                    return json_encode(['success' => false, 'message' => 'Login failed.']); 
+                } 
+            } catch (Exception $e) {
+                return json_encode(['success' => false, 'message' => 'Database error.']); 
+            }
+        } 
         
         public function getUserInfo($email) {
             try {
