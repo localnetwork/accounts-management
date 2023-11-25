@@ -59,13 +59,13 @@
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
         
                 if ($result) {
-                    return json_encode(['success' => true, 'message' => 'Login successful.']); 
+                    // return json_encode(['success' => true, 'message' => 'Login successful.']); 
                 } else {
                     // Handle the case when no results are returned
-                    return json_encode(['success' => false, 'message' => 'Login failed.']); 
+                    // return json_encode(['success' => false, 'message' => 'Login failed.']); 
                 } 
             } catch (Exception $e) {
-                return json_encode(['success' => false, 'message' => 'Database error.']); 
+                // return json_encode(['success' => false, 'message' => 'Database error.']); 
             }
         } 
         
@@ -73,6 +73,18 @@
             try {
                 $stmt = $this->db->prepare("CALL sp_getUserInfo(:email)");
                 $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+                $stmt->execute();
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                return $user;
+            } catch (PDOException $e) {
+                echo "Error: " . $e->getMessage();
+                return false; // Error 
+            } 
+        }
+        public function getUserById($userId) {
+            try {
+                $stmt = $this->db->prepare("CALL sp_getUserById(:userId)");
+                $stmt->bindParam(':userId', $userId, PDO::PARAM_STR);
                 $stmt->execute();
                 $user = $stmt->fetch(PDO::FETCH_ASSOC);
                 return $user;

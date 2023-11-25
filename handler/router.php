@@ -5,8 +5,10 @@
     header("Access-Control-Max-Age: 3600");
     header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
+    require_once '../vendor/autoload.php';
+    use Firebase\JWT\JWT;
     require_once("../object/user.php");
-    session_start(); 
+    // session_start(); 
 
     // $method = isset($_POST['method']) ? $_POST['method']: exit();
     $method = isset($_POST['method']) ? $_POST['method']: '';
@@ -14,8 +16,8 @@
     if (function_exists($method)) {
         call_user_func($method);
     } else {
-        // exit();
-        echo json_encode(['user' => $_SESSION['user']]); 
+        exit();
+        // echo json_encode(['user' => $_SESSION['user']]); 
         
     }
 
@@ -42,7 +44,14 @@
 
             $user = new User();
             $ret = $user->createUser($userInfo);
-            echo json_encode($ret);
+            // echo json_encode($ret);
+            
+            $ussss = $user->getUserInfo($email); 
+
+            $token = generateToken($ussss['id']);
+            $userData['token'] = $token;
+
+            echo json_encode($userData); 
         } else {
             // Validation failed, return error message
             http_response_code(422); // Cannot be proccessed.
@@ -70,7 +79,16 @@
 
             $user = new User();
             $ret = $user->userLogin($email, $password); 
-            echo json_encode($ret);
+            // echo json_encode($ret);
+            $test = $user->getUserInfo($email); 
+            $token = generateToken($test['id']);
+
+            // Include the token in the response
+            $eee['token'] = $token;
+
+            echo json_encode(array('success' => true, 'data' => $eee));
+            http_response_code(200); // Cannot be proccessed.
+            
         } else {
             // Validation failed, return error message
             http_response_code(422); // Cannot be proccessed.
@@ -82,7 +100,20 @@
 
 
 
-
+    function generateToken($userId) {
+        $secretKey = 'aaaa'; // Replace with a secure secret key
+        $issuedAt = time();
+        $expirationTime = $issuedAt + 3600; // Token expires in 1 hour
+    
+        $payload = array(
+            'user_id' => $userId,
+            'iat' => $issuedAt,
+            'exp' => $expirationTime
+        );
+    
+        return JWT::encode($payload, $secretKey, 'HS256');
+    }
+    
 
 
 

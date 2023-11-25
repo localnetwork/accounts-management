@@ -81,8 +81,8 @@
         }
 
         if (empty($errors)) {
-            return array('success' => true); 
-            // return array('success' => true, 'data' => $data);
+            // return array('success' => true); 
+            return array('success' => true, 'data' => $data);
         } else {
             return array('success' => false, 'errors' => $errors);
         }
