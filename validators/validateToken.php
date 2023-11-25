@@ -29,16 +29,22 @@ $headers = getallheaders();
 if(isset($headers['Authorization']) && $headers['Authorization']) {
     $tokenParts = explode(' ', $headers['Authorization']); 
     $token = $tokenParts[1]; 
-
-    $decoded = JWT::decode($token, new Key($secretKey, 'HS256'));
-    $userExists = checkUserExists($decoded->user_id); 
-    if($userExists == true) {
-        echo json_encode(array('success' => true));
-        http_response_code(200);
-    }else {
-        echo json_encode(array('success' => false));
-        http_response_code(200);
+    try {
+        $decoded = JWT::decode($token, new Key($secretKey, 'HS256'));
+        $userExists = checkUserExists($decoded->user_id); 
+        if($userExists == true) {
+            echo json_encode(array('success' => true, 'message' => 'Access granted.'));
+            http_response_code(200);
+        }else {
+            http_response_code(403);
+            echo json_encode(array('success' => false, 'message' => 'Access denied.'));
+        }
+    }catch(Exception $e) {
+        http_response_code(403);
+        echo json_encode(array('success' => false, 'message' => 'Access denied.'));
     }
+
+    
 }else {
     echo json_encode(array('success' => false, 'message' => 'Access denied! :P'));
     exit(); 
