@@ -81,12 +81,39 @@
                 return false; // Error 
             } 
         }
+
+        public function getAllUsers() {
+            try {
+                $stmt = $this->db->prepare("CALL sp_getAllUsers()");
+                $stmt->execute();
+                $user = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                return $user;
+            } catch (PDOException $e) {
+                echo "Error: " . $e->getMessage();
+                return false; // Error 
+            } 
+        }
+
+
         public function getUserById($userId) {
             try {
                 $stmt = $this->db->prepare("CALL sp_getUserById(:userId)");
                 $stmt->bindParam(':userId', $userId, PDO::PARAM_STR);
                 $stmt->execute();
                 $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                return $user;
+            } catch (PDOException $e) {
+                echo "Error: " . $e->getMessage();
+                return false; // Error 
+            } 
+        }
+
+        public function getUserRoles($userId) {
+            try {
+                $stmt = $this->db->prepare("CALL sp_getUserRoles(:uid)");
+                $stmt->bindParam(':uid', $userId, PDO::PARAM_STR);
+                $stmt->execute();
+                $user = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 return $user;
             } catch (PDOException $e) {
                 echo "Error: " . $e->getMessage();

@@ -8,26 +8,19 @@
     require_once '../vendor/autoload.php';
     use Firebase\JWT\JWT;
     require_once("../object/user.php");
-    // session_start(); 
-
-    // $method = isset($_POST['method']) ? $_POST['method']: exit();
     $method = isset($_POST['method']) ? $_POST['method']: '';
 
     if (function_exists($method)) {
         call_user_func($method);
     } else {
-        exit();
-        // echo json_encode(['user' => $_SESSION['user']]); 
-        
+        exit();        
     }
 
 
     function createUser() {
         require_once(__DIR__ . '/../validators/userValidator.php');
-        // Define the required fields
         $requiredFields = ['first_name', 'last_name', 'email', 'password'];
 
-        // Validate input data
         $validationResult = validateUserData($_POST, $requiredFields);
 
         if ($validationResult['success']) {
@@ -44,7 +37,6 @@
 
             $user = new User();
             $ret = $user->createUser($userInfo);
-            // echo json_encode($ret);
             
             $ussss = $user->getUserInfo($email); 
 
@@ -53,57 +45,91 @@
 
             echo json_encode($userData); 
         } else {
-            // Validation failed, return error message
-            http_response_code(422); // Cannot be proccessed.
+            http_response_code(422);
             echo json_encode(array('success' => false, 'errors' => $validationResult['errors']));
         }
     }
 
     function userLogin() {
-        // session_start();
         require_once(__DIR__ . '/../validators/userValidator.php');
-        // Define the required fields
         $requiredFields = ['first_name', 'last_name', 'email', 'password'];
 
-        // Validate input data
         $validationResult = validateLogin($_POST, $requiredFields);
 
         if ($validationResult['success']) {
             $email = isset($_POST['email']) ? $_POST['email'] : '';
             $password = isset($_POST['password']) ? $_POST['password'] : '';
 
-            $userInfo = array(
-                "email" => $email,
-                "password" => $password,
-            ); 
+            // $userInfo = array(
+            //     "email" => $email,
+            //     "password" => $password,
+            // ); 
 
             $user = new User();
             $ret = $user->userLogin($email, $password); 
-            // echo json_encode($ret);
-            $test = $user->getUserInfo($email); 
-            $token = generateToken($test['id']);
-
-            // Include the token in the response
-            $eee['token'] = $token;
+            $uInfo = $user->getUserInfo($email); 
+            $token = generateToken($uInfo['id']);
+            $eee = array(
+                'token' => $token,
+                'user_info' => array(
+                    'id' => $uInfo['id'],
+                    'email' => $uInfo['email'],
+                    'first_name' => $uInfo['first_name'],
+                    'last_name' => $uInfo['last_name'],
+                ),
+            );
+            // $eee['token'] = $token;
 
             echo json_encode(array('success' => true, 'data' => $eee));
-            http_response_code(200); // Cannot be proccessed.
+            http_response_code(200);
             
         } else {
-            // Validation failed, return error message
-            http_response_code(422); // Cannot be proccessed.
+            http_response_code(422); 
             echo json_encode(array('success' => false, 'errors' => $validationResult['errors']));
         }
     }
 
 
+    function getAllUsers() {
+        $users = new User();
+        $users = $users->getAllUsers();
+        echo json_encode(array('success' => true, 'data' => $users)); 
+    }
+
+    function getUserById() {
+        $userId = $_POST['userId'] ?? null;
+        if ($userId !== null) {
+
+            $user = new User();
+            $user = $user->getUserById($userId); 
+
+
+            echo json_encode(array('success' => true, 'data' => $user));
+            http_response_code(200);
+        } else {
+            echo json_encode(array('success' => false, 'message' => 'userId not provided'));
+            http_response_code(422);
+        }
+       
+    }
+
+    function getUserRoles() {
+        $userId = $_POST['userId'] ?? null;
+        $user = new User();
+        $roles = $user->getUserRoles($userId);
+        $roleIds = array_map(function($role) {
+            return $role['role_id'];
+        }, $roles);
+        echo json_encode(array('success' => true, 'data' => $roleIds)); 
+    }
+
 
 
 
     function generateToken($userId) {
-        $secretKey = 'aaaa'; // Replace with a secure secret key
+        $secretKey = 'aaaa';
         $issuedAt = time();
-        $expirationTime = $issuedAt + 3600; // Token expires in 1 hour
+        $expirationTime = $issuedAt + 3600;
     
         $payload = array(
             'user_id' => $userId,

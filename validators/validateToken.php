@@ -37,11 +37,11 @@ if(isset($headers['Authorization']) && $headers['Authorization']) {
             http_response_code(200);
         }else {
             http_response_code(403);
-            echo json_encode(array('success' => false, 'message' => 'Access denied.'));
+            echo json_encode(array('success' => false, 'message' => 'Access denied! :P'));
         }
     }catch(Exception $e) {
         http_response_code(403);
-        echo json_encode(array('success' => false, 'message' => 'Access denied.'));
+        echo json_encode(array('success' => false, 'message' => 'Access denied! :P'));
     }
 
     

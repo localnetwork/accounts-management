@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: database
--- Generation Time: Nov 23, 2023 at 10:29 AM
+-- Generation Time: Nov 26, 2023 at 10:57 AM
 -- Server version: 5.7.29
 -- PHP Version: 7.4.20
 
@@ -25,7 +25,7 @@ DELIMITER $$
 --
 -- Procedures
 --
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_createUser` (IN `first_name` VARCHAR(255), IN `last_name` VARCHAR(255), IN `email` VARCHAR(255), IN `password` VARCHAR(255))  BEGIN
+CREATE PROCEDURE `sp_createUser` (IN `first_name` VARCHAR(255), IN `last_name` VARCHAR(255), IN `email` VARCHAR(255), IN `password` VARCHAR(255))  BEGIN
     DECLARE IsValidEmail BIT DEFAULT 0;
     
     
@@ -43,7 +43,30 @@ CREATE DEFINER=`root`@`%` PROCEDURE `sp_createUser` (IN `first_name` VARCHAR(255
     END IF;
 END$$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_userLoginPost` (IN `p_email` VARCHAR(255), IN `p_password` VARCHAR(255))  BEGIN
+CREATE PROCEDURE `sp_getAllUsers` ()  BEGIN
+
+SELECT id, first_name, last_name, email FROM users;
+END$$
+
+CREATE PROCEDURE `sp_getUserById` (IN `userId` INT)  BEGIN
+
+SELECT first_name, last_name, email FROM users WHERE id = userId;
+
+END$$
+
+CREATE PROCEDURE `sp_getUserInfo` (IN `userEmail` VARCHAR(255))  BEGIN
+
+SELECT * FROM users WHERE email = userEmail;
+
+END$$
+
+CREATE PROCEDURE `sp_getUserRoles` (IN `uid` INT)  BEGIN
+
+SELECT role_id FROM user_roles WHERE uid = user_id;
+
+END$$
+
+CREATE PROCEDURE `sp_userLoginPost` (IN `p_email` VARCHAR(255), IN `p_password` VARCHAR(255))  BEGIN
     DECLARE v_user_id INT;
     DECLARE v_hashed_password VARCHAR(255);
 
@@ -124,6 +147,15 @@ CREATE TABLE `users` (
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `password`, `created`) VALUES
+(22, 'Diome Nike', 'Potot', 'diome.halcyonwebdesign@gmail.com', '$2y$10$V3zpGJIhBf7xUc/CWDiIZ.O646oNq21eTEVlHMjC3GvylXi2MfUKe', '2023-11-23 10:34:17'),
+(23, 'Diome Nike', 'Potot', 'admin@gmail.com', '$2y$10$Sd8/DGkuCL9KXKOhQUY4luJhdDSWI1XtwoUa8C3I3xQlIJNtZSbbi', '2023-11-23 10:42:12'),
+(24, 'Diome Nike', 'Potot', 'system.administrator@staging.saas.halcyondigitalhost.com', '$2y$10$gg/yJKpl2qSYa1j0jZj.ZuvOWjHCKg0f/u8at8IEzZTKWsIsN74G6', '2023-11-23 11:42:54');
+
 -- --------------------------------------------------------
 
 --
@@ -136,6 +168,33 @@ CREATE TABLE `user_roles` (
   `user_id` int(11) NOT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `user_roles`
+--
+
+INSERT INTO `user_roles` (`id`, `role_id`, `user_id`, `created`) VALUES
+(1, 1, 22, '2023-11-26 05:50:13'),
+(2, 2, 22, '2023-11-26 07:51:05');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_status`
+--
+
+CREATE TABLE `user_status` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `user_status`
+--
+
+INSERT INTO `user_status` (`id`, `name`) VALUES
+(0, 'disabled'),
+(1, 'active');
 
 --
 -- Indexes for dumped tables
@@ -175,6 +234,12 @@ ALTER TABLE `user_roles`
   ADD KEY `fk_users_id` (`user_id`);
 
 --
+-- Indexes for table `user_status`
+--
+ALTER TABLE `user_status`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -200,13 +265,19 @@ ALTER TABLE `role_permissions`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `user_roles`
 --
 ALTER TABLE `user_roles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `user_status`
+--
+ALTER TABLE `user_status`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints for dumped tables
