@@ -1,7 +1,7 @@
 <?php
 
-    require_once(__DIR__ . '/../config/config.php');
-    require_once(__DIR__ . '/../object/user.php');
+    require_once('../config/config.php');
+    require_once('../object/user.php');
 
     function userExists($email) {
         $dbcon = new Database(); 

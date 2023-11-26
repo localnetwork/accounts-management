@@ -18,7 +18,7 @@
 
 
     function createUser() {
-        require_once(__DIR__ . '/../validators/userValidator.php');
+        require_once('../validators/userValidator.php');
         $requiredFields = ['first_name', 'last_name', 'email', 'password'];
 
         $validationResult = validateUserData($_POST, $requiredFields);
@@ -51,7 +51,7 @@
     }
 
     function userLogin() {
-        require_once(__DIR__ . '/../validators/userValidator.php');
+        require_once('../validators/userValidator.php');
         $requiredFields = ['first_name', 'last_name', 'email', 'password'];
 
         $validationResult = validateLogin($_POST, $requiredFields);

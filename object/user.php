@@ -2,8 +2,8 @@
 
     class User {
         public function __construct() {
-            require_once(__DIR__ . '/../config/config.php');
-            require_once(__DIR__ . '/../validators/userValidator.php');
+            require_once('../config/config.php');
+            require_once('../validators/userValidator.php');
             $dbcon = new Database(); 
             $this->db = $dbcon->getConnection(); 
         } 

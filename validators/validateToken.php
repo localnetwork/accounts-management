@@ -20,7 +20,7 @@ header("Content-Type: application/json");
 require_once '../vendor/autoload.php';
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key; 
-require_once(__DIR__ . '/../object/user.php');
+require_once('../object/user.php');
 
 $secretKey = 'aaaa';
 
