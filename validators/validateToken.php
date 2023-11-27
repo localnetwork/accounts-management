@@ -33,7 +33,7 @@ if(isset($headers['Authorization']) && $headers['Authorization']) {
         $decoded = JWT::decode($token, new Key($secretKey, 'HS256'));
         $userExists = checkUserExists($decoded->user_id); 
         if($userExists == true) {
-            echo json_encode(array('success' => true, 'message' => 'Access granted.'));
+            echo json_encode(array('success' => true, 'message' => 'Access granted.', 'user_id' => $decoded->user_id));
             http_response_code(200);
         }else {
             http_response_code(403);

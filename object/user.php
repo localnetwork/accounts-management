@@ -49,6 +49,35 @@
             }
         }
 
+        public function createUserProfile($userProfile) {
+            $formatted_now = str_replace(' ', '#', strtolower(date('Y-m-d H:i:s')));
+            $sql = "call sp_createUserProfile(:first_name, :last_name, :address, :birthday)";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':first_name', $userProfile['first_name']); 
+            $stmt->bindParam(':last_name', $userProfile['last_name']); 
+            $stmt->bindParam(':address', $userProfile['address']); 
+            $stmt->bindParam(':birthday', $userProfile['birthday']); 
+            $stmt->bindParam(':user_id', $userProfile['user_id']); 
+
+            try {
+                $stmt->execute();
+                if(isset($stmt)) {  
+                    // return 1; 
+                    return json_encode(['success' => 1]);
+                }else {
+                    // throw new Exception(0);
+                    throw new Exception(json_encode(['error' => 0]));
+                }
+            }catch(Exception $e) {
+                // echo "Error: " . $e->getMessage();
+                // throw new Exception(-1);
+                throw new Exception(json_encode(['error' => -1, 'message' => $e->getMessage()]));
+            }
+            $stmt->close();
+        }
+
+
+
         public function userLogin($email, $password) {
             $sql = "CALL sp_userLoginPost(:p_email, :p_password)";
             $stmt = $this->db->prepare($sql);
@@ -108,9 +137,9 @@
             } 
         }
 
-        public function getUserRoles($userId) {
+        public function getUserRole($userId) {
             try {
-                $stmt = $this->db->prepare("CALL sp_getUserRoles(:uid)");
+                $stmt = $this->db->prepare("CALL sp_getUserRole(:uid)");
                 $stmt->bindParam(':uid', $userId, PDO::PARAM_STR);
                 $stmt->execute();
                 $user = $stmt->fetchAll(PDO::FETCH_ASSOC);

@@ -19,13 +19,16 @@
 
     function createUser() {
         require_once('../validators/userValidator.php');
-        $requiredFields = ['first_name', 'last_name', 'email', 'password'];
+        // $requiredFields = ['first_name', 'last_name', 'address', 'birthday', 'email', 'password'];
+        $requiredFields = ['first_name', 'last_name', 'email', 'password', 'confirm_password'];
 
         $validationResult = validateUserData($_POST, $requiredFields);
 
         if ($validationResult['success']) {
             $first_name = isset($_POST['first_name']) ? $_POST['first_name'] : '';
             $last_name = isset($_POST['last_name']) ? $_POST['last_name'] : '';
+            $address = isset($_POST['address']) ? $_POST['address'] : '';
+            $birthday = isset($_POST['birthday']) ? $_POST['birthday'] : '';
             $email = isset($_POST['email']) ? $_POST['email'] : '';
             $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
             $userInfo = array(
@@ -34,11 +37,20 @@
                 "email" => $email,
                 "password" => $password,
             );
-
+            
             $user = new User();
             $ret = $user->createUser($userInfo);
-            
             $ussss = $user->getUserInfo($email); 
+
+            $userProfile = array(
+                "first_name" => $first_name,
+                "last_name" => $last_name,
+                "address" => $address,
+                "birthday" => $birthday,
+                "user_id" => $ussss['id']
+            );
+
+            $createProfile = $user->createUserProfile($userProfile); 
 
             $token = generateToken($ussss['id']);
             $userData['token'] = $token;
@@ -87,7 +99,7 @@
             http_response_code(422); 
             echo json_encode(array('success' => false, 'errors' => $validationResult['errors']));
         }
-    }
+    } 
 
 
     function getAllUsers() {
@@ -113,15 +125,25 @@
        
     }
 
-    function getUserRoles() {
+    function getUserRole() {
         $userId = $_POST['userId'] ?? null;
         $user = new User();
-        $roles = $user->getUserRoles($userId);
-        $roleIds = array_map(function($role) {
-            return $role['role_id'];
-        }, $roles);
-        echo json_encode(array('success' => true, 'data' => $roleIds)); 
+        $role = $user->getUserRole($userId);
+        // $roleIds = array_map(function($role) {
+        //     return $role['role_id'];
+        // }, $roles);
+        echo json_encode(array('success' => true, 'data' => $role[0])); 
     }
+
+    // function getUserRoles() {
+        // $userId = $_POST['userId'] ?? null;
+        // $user = new User();
+        // $roles = $user->getUserRoles($userId);
+        // $roleIds = array_map(function($role) {
+        //     return $role['role_id'];
+        // }, $roles);
+        // echo json_encode(array('success' => true, 'data' => $roleIds)); 
+    // }
 
 
 

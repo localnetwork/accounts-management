@@ -66,15 +66,18 @@
         $errors = array();
         $default_error = 'These credentials do not match our records.'; 
         if(userExists($data['email'])) {
-            $hashedPassword = $result['password'];
+            if(isset($result['password'])) {
+                $hashedPassword = $result['password'];
 
-            if (password_verify($data['password'], $hashedPassword)) {
-                // Throw session to frontend.
+                if (password_verify($data['password'], $hashedPassword)) {
+                    // Throw session to frontend.
 
-            } else {
-                $errors['email'] = $default_error; 
-                $errors['password'] = $default_error; 
+                } else {
+                    $errors['email'] = $default_error; 
+                    $errors['password'] = $default_error; 
+                }
             }
+            
         }else {
             $errors['email'] = $default_error; 
             $errors['password'] = $default_error; 
