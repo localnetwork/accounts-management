@@ -13,12 +13,14 @@
         public function createUser($userInfo) {
 
             $formatted_now = str_replace(' ', '#', strtolower(date('Y-m-d H:i:s')));
-            $sql = "call sp_createUser(:first_name, :last_name, :email, :password)";
+            $sql = "call sp_createUser(:first_name, :last_name, :email, :password, :role, :user_status)";
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':first_name', $userInfo['first_name']); 
             $stmt->bindParam(':last_name', $userInfo['last_name']); 
             $stmt->bindParam(':email', $userInfo['email']); 
             $stmt->bindParam(':password', $userInfo['password']); 
+            $stmt->bindParam(':role', $userInfo['role']); 
+            $stmt->bindParam(':user_status', $userInfo['user_status']); 
             try {
                 if(userEmailValid($userInfo['email'])) {
                     if(userExists($userInfo['email'])) {
@@ -51,13 +53,13 @@
 
         public function createUserProfile($userProfile) {
             $formatted_now = str_replace(' ', '#', strtolower(date('Y-m-d H:i:s')));
-            $sql = "call sp_createUserProfile(:first_name, :last_name, :address, :birthday)";
+            $sql = "call sp_createUserProfile(:first_name, :last_name, :address, :birthday, :user_id)";
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':first_name', $userProfile['first_name']); 
             $stmt->bindParam(':last_name', $userProfile['last_name']); 
             $stmt->bindParam(':address', $userProfile['address']); 
             $stmt->bindParam(':birthday', $userProfile['birthday']); 
-            $stmt->bindParam(':user_id', $userProfile['user_id']); 
+            $stmt->bindParam(':user_id', $userProfile['user_id']);  
 
             try {
                 $stmt->execute();
@@ -143,19 +145,6 @@
                 $stmt->bindParam(':uid', $userId, PDO::PARAM_STR);
                 $stmt->execute();
                 $user = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                return $user;
-            } catch (PDOException $e) {
-                echo "Error: " . $e->getMessage();
-                return false; // Error 
-            } 
-        }
-
-        public function getMediaInfo($media_id) {
-            try {
-                $stmt = $this->db->prepare("call sp_getMediaById(:mid)");
-                $stmt->bindParam(':mid', $media_id, PDO::PARAM_STR);
-                $stmt->execute();
-                $user = $stmt->fetch(PDO::FETCH_ASSOC);
                 return $user;
             } catch (PDOException $e) {
                 echo "Error: " . $e->getMessage();

@@ -61,14 +61,21 @@
 
     function validateLogin($data, $requiredFields) {
         $user = new User();
-        $result = $user->getUserInfo($data['email']);
-
         $errors = array();
         $default_error = 'These credentials do not match our records.'; 
+
+
+        $result = $user->getUserInfo($data['email']);
+
+        if(isset($result['user_status']) && $result['user_status'] === 1) {
+            $errors['status'] = 'You are not allowed to login. Your account has been blocked, please contact administrator.'; 
+        }
+        
+        
+
         if(userExists($data['email'])) {
             if(isset($result['password'])) {
                 $hashedPassword = $result['password'];
-
                 if (password_verify($data['password'], $hashedPassword)) {
                     // Throw session to frontend.
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: database
--- Generation Time: Nov 27, 2023 at 12:54 PM
+-- Generation Time: Nov 28, 2023 at 07:48 AM
 -- Server version: 5.7.29
 -- PHP Version: 7.4.20
 
@@ -25,7 +25,7 @@ DELIMITER $$
 --
 -- Procedures
 --
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_createUser` (IN `first_name` VARCHAR(255), IN `last_name` VARCHAR(255), IN `email` VARCHAR(255), IN `password` VARCHAR(255))  BEGIN
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_createUser` (IN `first_name` VARCHAR(255), IN `last_name` VARCHAR(255), IN `email` VARCHAR(255), IN `password` VARCHAR(255), IN `role` INT(255), IN `user_status` INT(255))  BEGIN
     DECLARE IsValidEmail BIT DEFAULT 0;
     
     
@@ -35,7 +35,7 @@ CREATE DEFINER=`root`@`%` PROCEDURE `sp_createUser` (IN `first_name` VARCHAR(255
 
     IF IsValidEmail = 1 THEN
         
-        INSERT INTO users (first_name, last_name, email, password) VALUES (first_name, last_name, email, password);
+        INSERT INTO users (first_name, last_name, email, password, role, user_status) VALUES (first_name, last_name, email, password,role, user_status);
     ELSE
         
         SIGNAL SQLSTATE '45000'
@@ -43,7 +43,7 @@ CREATE DEFINER=`root`@`%` PROCEDURE `sp_createUser` (IN `first_name` VARCHAR(255
     END IF;
 END$$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_createUserProfile` (IN `first_name` VARCHAR(255), IN `last_name` VARCHAR(255), IN `address` VARCHAR(255), IN `birthday` VARCHAR(255), IN `user_id` INT)  BEGIN
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_createUserProfile` (IN `first_name` VARCHAR(255), IN `last_name` VARCHAR(255), IN `address` VARCHAR(255), IN `birthday` VARCHAR(255), IN `user_id` INT(255))  BEGIN
 
 INSERT INTO profile_data (first_name, last_name, address, birthday, user_id) VALUES (first_name, last_name, address, birthday, user_id);
 
@@ -137,7 +137,9 @@ CREATE TABLE `profile_data` (
 --
 
 INSERT INTO `profile_data` (`id`, `first_name`, `last_name`, `birthday`, `address`, `user_id`) VALUES
-(1, 'asd', 'asd', 'test', 'test', 5);
+(12, 'Dion', 'Halcyon', '2023-11-28', 'gabi cordova', 23),
+(13, 'Dion', 'test', '2023-11-28', 'test\r\ntest', 24),
+(14, 'bbb', 'bbb', '2023-11-28', 'bbbb', 25);
 
 -- --------------------------------------------------------
 
@@ -186,7 +188,6 @@ CREATE TABLE `users` (
   `password` varchar(255) NOT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `role` int(11) NOT NULL DEFAULT '3',
-  `status` int(11) DEFAULT NULL,
   `user_status` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -194,8 +195,11 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `password`, `created`, `role`, `status`, `user_status`) VALUES
-(5, 'Diome Nike', 'Potot', 'diome.halcyonwebdesign@gmail.com', '$2y$10$MAWmtKBqUpbAbo8hrP34MO9zu7fyWmw4cjPz/wnoqFW0i01of1wf2', '2023-11-27 12:50:39', 3, NULL, 0);
+INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `password`, `created`, `role`, `user_status`) VALUES
+(5, 'Diome Nike', 'Potot', 'diome.halcyonwebdesign@gmail.com', '$2y$10$MAWmtKBqUpbAbo8hrP34MO9zu7fyWmw4cjPz/wnoqFW0i01of1wf2', '2023-11-27 12:50:39', 1, 2),
+(23, 'Dion', 'Halcyon', 'admin@gmail.com', '$2y$10$MAQIqkbk/f/p3nWL5K5pJul6d01r31KvIr0Y7aWtW9I1auMROGEJC', '2023-11-28 07:44:56', 1, 1),
+(24, 'Dion', 'test', 'aa@aa.com', '$2y$10$0fggswBLJdyGTJPk8pJ3neRnq4Hb1mc3XtCFBJdI/9.xU.Pz1FX9y', '2023-11-28 07:45:29', 2, 1),
+(25, 'bbb', 'bbb', 'bb@bb.com', '$2y$10$DF296hGK5MxL.fnkO0EOuesgZd8mTOr3annK25enes1suO1WvYV2K', '2023-11-28 07:45:55', 3, 1);
 
 -- --------------------------------------------------------
 
@@ -213,8 +217,8 @@ CREATE TABLE `user_status` (
 --
 
 INSERT INTO `user_status` (`id`, `name`) VALUES
-(0, 'disabled'),
-(1, 'active');
+(1, 'disabled'),
+(2, 'active');
 
 --
 -- Indexes for dumped tables
@@ -252,7 +256,6 @@ ALTER TABLE `role_permissions`
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_role_id` (`role`),
-  ADD KEY `fk_users_status` (`status`),
   ADD KEY `fk_user_status` (`user_status`);
 
 --
@@ -275,7 +278,7 @@ ALTER TABLE `permissions`
 -- AUTO_INCREMENT for table `profile_data`
 --
 ALTER TABLE `profile_data`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -293,13 +296,13 @@ ALTER TABLE `role_permissions`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `user_status`
 --
 ALTER TABLE `user_status`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables

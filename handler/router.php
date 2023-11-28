@@ -19,43 +19,59 @@
 
     function createUser() {
         require_once('../validators/userValidator.php');
-        // $requiredFields = ['first_name', 'last_name', 'address', 'birthday', 'email', 'password'];
-        $requiredFields = ['first_name', 'last_name', 'email', 'password', 'confirm_password'];
+        $requiredFields = ['first_name', 'last_name', 'address', 'birthday', 'email', 'password', 'confirm_password', 'user_status', 'role'];
+        // $requiredFields = ['first_name', 'last_name',  'email', 'password', 'confirm_password'];
 
         $validationResult = validateUserData($_POST, $requiredFields);
+
 
         if ($validationResult['success']) {
             $first_name = isset($_POST['first_name']) ? $_POST['first_name'] : '';
             $last_name = isset($_POST['last_name']) ? $_POST['last_name'] : '';
             $address = isset($_POST['address']) ? $_POST['address'] : '';
             $birthday = isset($_POST['birthday']) ? $_POST['birthday'] : '';
+            
             $email = isset($_POST['email']) ? $_POST['email'] : '';
             $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+            $role = isset($_POST['role']) ? $_POST['role'] : '';
+            $user_status = isset($_POST['user_status']) ? $_POST['user_status'] : '';
             $userInfo = array(
                 "first_name" => $first_name,
                 "last_name" => $last_name,
                 "email" => $email,
                 "password" => $password,
+                "role" => $role,
+                "user_status" => $user_status,
             );
             
             $user = new User();
             $ret = $user->createUser($userInfo);
-            $ussss = $user->getUserInfo($email); 
+            $getUserInfo = $user->getUserInfo($email); 
 
-            $userProfile = array(
-                "first_name" => $first_name,
-                "last_name" => $last_name,
-                "address" => $address,
-                "birthday" => $birthday,
-                "user_id" => $ussss['id']
-            );
 
-            $createProfile = $user->createUserProfile($userProfile); 
+            echo json_encode($user_status);
+            
+            if(isset($getUserInfo) && $getUserInfo['id']) { 
+                $userProfile = array(
+                    "first_name" => $first_name,
+                    "last_name" => $last_name,
+                    "address" => $address, 
+                    "birthday" => $birthday,
+                    "user_id" => $getUserInfo['id']
+                );
 
-            $token = generateToken($ussss['id']);
-            $userData['token'] = $token;
+                $createProfile = $user->createUserProfile($userProfile); 
 
-            echo json_encode($userData); 
+                $token = generateToken($getUserInfo['id']);
+            
+                $userData = array(
+                    'token' => $token,
+                    'user_profile' => $userProfile, 
+                );
+                echo json_encode($userData);
+            }else {
+                echo json_encode(array('success' => false, 'user_info' => $getUserInfo,'id' => $getUserInfo['id'], 'errors' => 'Cannot be saved.'));
+            }
         } else {
             http_response_code(422);
             echo json_encode(array('success' => false, 'errors' => $validationResult['errors']));
@@ -64,7 +80,8 @@
 
     function userLogin() {
         require_once('../validators/userValidator.php');
-        $requiredFields = ['first_name', 'last_name', 'email', 'password'];
+        // $requiredFields = ['first_name', 'last_name', 'email', 'password'];
+        $requiredFields = ['email', 'password'];
 
         $validationResult = validateLogin($_POST, $requiredFields);
 
