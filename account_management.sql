@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: database
--- Generation Time: Nov 28, 2023 at 07:48 AM
+-- Generation Time: Nov 29, 2023 at 05:51 AM
 -- Server version: 5.7.29
 -- PHP Version: 7.4.20
 
@@ -25,7 +25,7 @@ DELIMITER $$
 --
 -- Procedures
 --
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_createUser` (IN `first_name` VARCHAR(255), IN `last_name` VARCHAR(255), IN `email` VARCHAR(255), IN `password` VARCHAR(255), IN `role` INT(255), IN `user_status` INT(255))  BEGIN
+CREATE PROCEDURE `sp_createUser` (IN `email` VARCHAR(255), IN `password` VARCHAR(255), IN `role` INT(255), IN `user_status` INT(255))  BEGIN
     DECLARE IsValidEmail BIT DEFAULT 0;
     
     
@@ -35,7 +35,7 @@ CREATE DEFINER=`root`@`%` PROCEDURE `sp_createUser` (IN `first_name` VARCHAR(255
 
     IF IsValidEmail = 1 THEN
         
-        INSERT INTO users (first_name, last_name, email, password, role, user_status) VALUES (first_name, last_name, email, password,role, user_status);
+        INSERT INTO users (email, password, role, user_status) VALUES (email, password,role, user_status);
     ELSE
         
         SIGNAL SQLSTATE '45000'
@@ -43,42 +43,48 @@ CREATE DEFINER=`root`@`%` PROCEDURE `sp_createUser` (IN `first_name` VARCHAR(255
     END IF;
 END$$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_createUserProfile` (IN `first_name` VARCHAR(255), IN `last_name` VARCHAR(255), IN `address` VARCHAR(255), IN `birthday` VARCHAR(255), IN `user_id` INT(255))  BEGIN
+CREATE PROCEDURE `sp_createUserProfile` (IN `first_name` VARCHAR(255), IN `last_name` VARCHAR(255), IN `address` VARCHAR(255), IN `birthday` VARCHAR(255), IN `user_id` INT(255))  BEGIN
 
 INSERT INTO profile_data (first_name, last_name, address, birthday, user_id) VALUES (first_name, last_name, address, birthday, user_id);
 
 END$$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_getAllUsers` ()  BEGIN
+CREATE PROCEDURE `sp_getAllUsers` ()  BEGIN
 
-SELECT id, first_name, last_name, email FROM users;
+SELECT id, email FROM users;
 END$$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_getRoles` ()  BEGIN
+CREATE PROCEDURE `sp_getRoles` ()  BEGIN
 
 SELECT * FROM roles;
 
 END$$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_getUserById` (IN `userId` INT)  BEGIN
+CREATE PROCEDURE `sp_getUserById` (IN `userId` INT)  BEGIN
 
-SELECT first_name, last_name, email FROM users WHERE id = userId;
+SELECT id, role, user_status, email FROM users WHERE id = userId;
 
 END$$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_getUserInfo` (IN `userEmail` VARCHAR(255))  BEGIN
+CREATE PROCEDURE `sp_getUserInfo` (IN `userEmail` VARCHAR(255))  BEGIN
 
 SELECT * FROM users WHERE email = userEmail;
 
 END$$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_getUserRole` (IN `uid` INT)  BEGIN
+CREATE PROCEDURE `sp_getUserProfileData` (IN `uid` INT)  BEGIN
 
-SELECT role FROM users WHERE uid = id;
+SELECT * FROM profile_data WHERE uid = user_id;
 
 END$$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_userLoginPost` (IN `p_email` VARCHAR(255), IN `p_password` VARCHAR(255))  BEGIN
+CREATE PROCEDURE `sp_getUserRole` (IN `uid` INT)  BEGIN
+
+SELECT user_status, role FROM users WHERE uid = id;
+
+END$$
+
+CREATE PROCEDURE `sp_userLoginPost` (IN `p_email` VARCHAR(255), IN `p_password` VARCHAR(255))  BEGIN
     DECLARE v_user_id INT;
     DECLARE v_hashed_password VARCHAR(255);
 
@@ -97,7 +103,7 @@ CREATE DEFINER=`root`@`%` PROCEDURE `sp_userLoginPost` (IN `p_email` VARCHAR(255
     END IF;
 END$$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_userWithEmailExist` (IN `userEmail` VARCHAR(255))  BEGIN
+CREATE PROCEDURE `sp_userWithEmailExist` (IN `userEmail` VARCHAR(255))  BEGIN
 
 SELECT COUNT(*) FROM users WHERE userEmail = email; 
 
@@ -137,9 +143,9 @@ CREATE TABLE `profile_data` (
 --
 
 INSERT INTO `profile_data` (`id`, `first_name`, `last_name`, `birthday`, `address`, `user_id`) VALUES
-(12, 'Dion', 'Halcyon', '2023-11-28', 'gabi cordova', 23),
-(13, 'Dion', 'test', '2023-11-28', 'test\r\ntest', 24),
-(14, 'bbb', 'bbb', '2023-11-28', 'bbbb', 25);
+(15, 'dion', 'halcyon', 'test', 'test address', 5),
+(16, 'Sample', 'User', '2023-11-29', 'sample address', 6),
+(17, 'Dion', 'Potot', '2023-11-29', 'test\r\ntest', 9);
 
 -- --------------------------------------------------------
 
@@ -182,8 +188,6 @@ CREATE TABLE `role_permissions` (
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
-  `first_name` varchar(255) NOT NULL,
-  `last_name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -195,11 +199,9 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `password`, `created`, `role`, `user_status`) VALUES
-(5, 'Diome Nike', 'Potot', 'diome.halcyonwebdesign@gmail.com', '$2y$10$MAWmtKBqUpbAbo8hrP34MO9zu7fyWmw4cjPz/wnoqFW0i01of1wf2', '2023-11-27 12:50:39', 1, 2),
-(23, 'Dion', 'Halcyon', 'admin@gmail.com', '$2y$10$MAQIqkbk/f/p3nWL5K5pJul6d01r31KvIr0Y7aWtW9I1auMROGEJC', '2023-11-28 07:44:56', 1, 1),
-(24, 'Dion', 'test', 'aa@aa.com', '$2y$10$0fggswBLJdyGTJPk8pJ3neRnq4Hb1mc3XtCFBJdI/9.xU.Pz1FX9y', '2023-11-28 07:45:29', 2, 1),
-(25, 'bbb', 'bbb', 'bb@bb.com', '$2y$10$DF296hGK5MxL.fnkO0EOuesgZd8mTOr3annK25enes1suO1WvYV2K', '2023-11-28 07:45:55', 3, 1);
+INSERT INTO `users` (`id`, `email`, `password`, `created`, `role`, `user_status`) VALUES
+(8, 'diome.halcyonwebdesign@gmail.com', '$2y$10$0jX6vCACs5mBkT00XcCxzOMJM.vyJTvRiZb6MQ0c3eNT/Ir8TYAFG', '2023-11-29 05:35:40', 1, 2),
+(9, 'admin@gmail.com', '$2y$10$ll5vBbbxKyEeI3VSmdKk8ORt4UZr60HZ66OhQndyJX2Y1B6MFYC5i', '2023-11-29 05:38:10', 1, 2);
 
 -- --------------------------------------------------------
 
@@ -278,7 +280,7 @@ ALTER TABLE `permissions`
 -- AUTO_INCREMENT for table `profile_data`
 --
 ALTER TABLE `profile_data`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -296,13 +298,13 @@ ALTER TABLE `role_permissions`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `user_status`
 --
 ALTER TABLE `user_status`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Constraints for dumped tables

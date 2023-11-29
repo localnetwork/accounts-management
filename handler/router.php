@@ -36,8 +36,6 @@
             $role = isset($_POST['role']) ? $_POST['role'] : '';
             $user_status = isset($_POST['user_status']) ? $_POST['user_status'] : '';
             $userInfo = array(
-                "first_name" => $first_name,
-                "last_name" => $last_name,
                 "email" => $email,
                 "password" => $password,
                 "role" => $role,
@@ -48,9 +46,6 @@
             $ret = $user->createUser($userInfo);
             $getUserInfo = $user->getUserInfo($email); 
 
-
-            echo json_encode($user_status);
-            
             if(isset($getUserInfo) && $getUserInfo['id']) { 
                 $userProfile = array(
                     "first_name" => $first_name,
@@ -78,6 +73,8 @@
         }
     }
 
+    
+
     function userLogin() {
         require_once('../validators/userValidator.php');
         // $requiredFields = ['first_name', 'last_name', 'email', 'password'];
@@ -103,8 +100,6 @@
                 'user_info' => array(
                     'id' => $uInfo['id'],
                     'email' => $uInfo['email'],
-                    'first_name' => $uInfo['first_name'],
-                    'last_name' => $uInfo['last_name'],
                 ),
             );
             // $eee['token'] = $token;
@@ -149,9 +144,18 @@
         // $roleIds = array_map(function($role) {
         //     return $role['role_id'];
         // }, $roles);
-        echo json_encode(array('success' => true, 'data' => $role[0])); 
+        echo json_encode(array('success' => true, 'data' => $role[0], 'status' => $role[0]['user_status'])); 
     }
 
+    function getUserProfileData() {
+        $userId = $_POST['userId'] ?? null;
+
+        $user = new User(); 
+
+        $userInfo = $user->getUserProfileData($userId); 
+
+        echo json_encode(array('success' => true, 'data' => $userInfo)); 
+    }
     // function getUserRoles() {
         // $userId = $_POST['userId'] ?? null;
         // $user = new User();

@@ -32,26 +32,33 @@
     function validateUserData($data, $requiredFields) {
         // Implement your validation logic here
         $errors = array();
-    
-        // Additional validation rules
-        if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            $errors['email'] = 'Please provide a valid format.';
-        } 
-    
-        if(userExists($data['email'])) {
-            $errors['email'] = 'Email is already taken. Please try another';
-        }
-        if($_POST['password'] != $_POST['confirm_password']) {
-            $errors['password'] = 'Password does not match.';
-            $errors['confirm_password'] = 'Password does not match.';
-        }
-    
-        // Check if required fields are not empty
-        foreach ($requiredFields as $field) {
-            if (empty($data[$field])) {
-                $errors[$field] = ucfirst(str_replace('_', ' ', $field)) . ' is required.';
+
+        $allowedRoleIds = [1, 2]; 
+        
+        if(!in_array($_POST['roleId'], $allowedRoleIds)) {
+            $errors['not_allowed'] = "You're not allowed to do this function.";
+        }else {
+            // Additional validation rules
+            if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+                $errors['email'] = 'Please provide a valid format.';
+            } 
+        
+            if(userExists($data['email'])) {
+                $errors['email'] = 'Email is already taken. Please try another';
+            }
+            if($_POST['password'] != $_POST['confirm_password']) {
+                $errors['password'] = 'Password does not match.';
+                $errors['confirm_password'] = 'Password does not match.';
+            }
+        
+            // Check if required fields are not empty
+            foreach ($requiredFields as $field) {
+                if (empty($data[$field])) {
+                    $errors[$field] = ucfirst(str_replace('_', ' ', $field)) . ' is required.';
+                }
             }
         }
+        
         if (empty($errors)) {
             return array('success' => true, 'data' => $data);
         } else {
