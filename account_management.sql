@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: database
--- Generation Time: Nov 29, 2023 at 05:51 AM
+-- Generation Time: Nov 29, 2023 at 05:59 AM
 -- Server version: 5.7.29
 -- PHP Version: 7.4.20
 
@@ -137,15 +137,6 @@ CREATE TABLE `profile_data` (
   `address` varchar(255) NOT NULL,
   `user_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `profile_data`
---
-
-INSERT INTO `profile_data` (`id`, `first_name`, `last_name`, `birthday`, `address`, `user_id`) VALUES
-(15, 'dion', 'halcyon', 'test', 'test address', 5),
-(16, 'Sample', 'User', '2023-11-29', 'sample address', 6),
-(17, 'Dion', 'Potot', '2023-11-29', 'test\r\ntest', 9);
 
 -- --------------------------------------------------------
 
