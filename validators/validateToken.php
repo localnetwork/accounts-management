@@ -7,7 +7,7 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
 
 // // Allow the following headers in the request
-header("Access-Control-Allow-Headers: Authorization, Content-Type");
+header("Access-Control-Allow-Headers: Authorize, Authorization, Content-Type");
 
 // // Allow credentials (cookies, authorization headers, etc.)
 header("Access-Control-Allow-Credentials: true");
@@ -26,13 +26,9 @@ $secretKey = 'aaaa';
 
 $headers = getallheaders(); 
 
-echo json_encode($headers); 
 
-if(isset($headers['Authorization']) && $headers['Authorization']) {
-    
-
-
-    $tokenParts = explode(' ', $headers['Authorization']); 
+if(isset($headers['Authorize']) && $headers['Authorize']) {
+    $tokenParts = explode(' ', $headers['Authorize']); 
     $token = $tokenParts[1]; 
     try {
         $decoded = JWT::decode($token, new Key($secretKey, 'HS256'));
