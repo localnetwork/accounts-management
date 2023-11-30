@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: database
--- Generation Time: Nov 29, 2023 at 05:59 AM
+-- Generation Time: Nov 30, 2023 at 01:27 PM
 -- Server version: 5.7.29
 -- PHP Version: 7.4.20
 
@@ -25,7 +25,7 @@ DELIMITER $$
 --
 -- Procedures
 --
-CREATE PROCEDURE `sp_createUser` (IN `email` VARCHAR(255), IN `password` VARCHAR(255), IN `role` INT(255), IN `user_status` INT(255))  BEGIN
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_createUser` (IN `email` VARCHAR(255), IN `password` VARCHAR(255), IN `role` INT(255), IN `user_status` INT(255))  BEGIN
     DECLARE IsValidEmail BIT DEFAULT 0;
     
     
@@ -43,48 +43,48 @@ CREATE PROCEDURE `sp_createUser` (IN `email` VARCHAR(255), IN `password` VARCHAR
     END IF;
 END$$
 
-CREATE PROCEDURE `sp_createUserProfile` (IN `first_name` VARCHAR(255), IN `last_name` VARCHAR(255), IN `address` VARCHAR(255), IN `birthday` VARCHAR(255), IN `user_id` INT(255))  BEGIN
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_createUserProfile` (IN `first_name` VARCHAR(255), IN `last_name` VARCHAR(255), IN `address` VARCHAR(255), IN `birthday` VARCHAR(255), IN `user_id` INT(255))  BEGIN
 
 INSERT INTO profile_data (first_name, last_name, address, birthday, user_id) VALUES (first_name, last_name, address, birthday, user_id);
 
 END$$
 
-CREATE PROCEDURE `sp_getAllUsers` ()  BEGIN
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_getAllUsers` ()  BEGIN
 
 SELECT id, email FROM users;
 END$$
 
-CREATE PROCEDURE `sp_getRoles` ()  BEGIN
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_getRoles` ()  BEGIN
 
 SELECT * FROM roles;
 
 END$$
 
-CREATE PROCEDURE `sp_getUserById` (IN `userId` INT)  BEGIN
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_getUserById` (IN `userId` INT)  BEGIN
 
 SELECT id, role, user_status, email FROM users WHERE id = userId;
 
 END$$
 
-CREATE PROCEDURE `sp_getUserInfo` (IN `userEmail` VARCHAR(255))  BEGIN
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_getUserInfo` (IN `userEmail` VARCHAR(255))  BEGIN
 
 SELECT * FROM users WHERE email = userEmail;
 
 END$$
 
-CREATE PROCEDURE `sp_getUserProfileData` (IN `uid` INT)  BEGIN
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_getUserProfileData` (IN `uid` INT)  BEGIN
 
 SELECT * FROM profile_data WHERE uid = user_id;
 
 END$$
 
-CREATE PROCEDURE `sp_getUserRole` (IN `uid` INT)  BEGIN
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_getUserRole` (IN `uid` INT)  BEGIN
 
 SELECT user_status, role FROM users WHERE uid = id;
 
 END$$
 
-CREATE PROCEDURE `sp_userLoginPost` (IN `p_email` VARCHAR(255), IN `p_password` VARCHAR(255))  BEGIN
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_userLoginPost` (IN `p_email` VARCHAR(255), IN `p_password` VARCHAR(255))  BEGIN
     DECLARE v_user_id INT;
     DECLARE v_hashed_password VARCHAR(255);
 
@@ -103,7 +103,7 @@ CREATE PROCEDURE `sp_userLoginPost` (IN `p_email` VARCHAR(255), IN `p_password` 
     END IF;
 END$$
 
-CREATE PROCEDURE `sp_userWithEmailExist` (IN `userEmail` VARCHAR(255))  BEGIN
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_userWithEmailExist` (IN `userEmail` VARCHAR(255))  BEGIN
 
 SELECT COUNT(*) FROM users WHERE userEmail = email; 
 
@@ -271,7 +271,7 @@ ALTER TABLE `permissions`
 -- AUTO_INCREMENT for table `profile_data`
 --
 ALTER TABLE `profile_data`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `roles`
