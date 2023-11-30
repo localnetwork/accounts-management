@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: database
--- Generation Time: Nov 29, 2023 at 05:59 AM
+-- Generation Time: Nov 29, 2023 at 07:43 AM
 -- Server version: 5.7.29
 -- PHP Version: 7.4.20
 
@@ -138,6 +138,13 @@ CREATE TABLE `profile_data` (
   `user_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `profile_data`
+--
+
+INSERT INTO `profile_data` (`id`, `first_name`, `last_name`, `birthday`, `address`, `user_id`) VALUES
+(18, 'Admin', 'Ako', '2023-11-29', 'admin', 10);
+
 -- --------------------------------------------------------
 
 --
@@ -192,7 +199,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `email`, `password`, `created`, `role`, `user_status`) VALUES
 (8, 'diome.halcyonwebdesign@gmail.com', '$2y$10$0jX6vCACs5mBkT00XcCxzOMJM.vyJTvRiZb6MQ0c3eNT/Ir8TYAFG', '2023-11-29 05:35:40', 1, 2),
-(9, 'admin@gmail.com', '$2y$10$ll5vBbbxKyEeI3VSmdKk8ORt4UZr60HZ66OhQndyJX2Y1B6MFYC5i', '2023-11-29 05:38:10', 1, 2);
+(10, 'admin@gmail.com', '$2y$10$RbsqOIU5eEVs6q4sdsCOOOJF5HqmgvMxBadpSYu6ZzZIjSNJrScnK', '2023-11-29 07:42:50', 1, 2);
 
 -- --------------------------------------------------------
 
@@ -271,7 +278,7 @@ ALTER TABLE `permissions`
 -- AUTO_INCREMENT for table `profile_data`
 --
 ALTER TABLE `profile_data`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -289,7 +296,7 @@ ALTER TABLE `role_permissions`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `user_status`
