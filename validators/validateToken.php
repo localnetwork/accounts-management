@@ -1,5 +1,5 @@
 <?php
-
+ 
 // // Allow requests from any origin
 header("Access-Control-Allow-Origin: *");
 
@@ -25,6 +25,8 @@ require_once('../object/user.php');
 $secretKey = 'aaaa';
 
 $headers = getallheaders(); 
+
+echo json_encode($headers); 
 
 if(isset($headers['Authorization']) && $headers['Authorization']) {
     
