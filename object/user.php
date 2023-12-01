@@ -114,6 +114,19 @@
             } 
         }
 
+        public function getPasswordById($userId) {
+            try {
+                $stmt = $this->db->prepare("CALL sp_getPasswordById(:uid)");
+                $stmt->bindParam(':uid', $userId, PDO::PARAM_STR);
+                $stmt->execute();
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                return $user;
+            } catch (PDOException $e) {
+                echo "Error: " . $e->getMessage();
+                return false; // Error 
+            } 
+        }
+
         public function getUserProfileData($userId){
             try {
                 $stmt = $this->db->prepare("CALL sp_getUserProfileData(:uid)");
@@ -154,25 +167,63 @@
         }
 
 
-        public function updateUser($email,) {
+        public function updateUser($email, $password, $userId) {
             try {              
-                $stmt = $this->db->prepare("call sp_userUpdate(:email)");
-                $stmt->bindParam(':email', $email, PDO::PARAM_STR);
-
+                $stmt = $this->db->prepare("call sp_updateUser(:userEmail, :userPassword, :uid)");
+                $stmt->bindParam(':userEmail', $email, PDO::PARAM_STR);
+                $stmt->bindParam(':userPassword', $password, PDO::PARAM_STR);
+                $stmt->bindParam(':uid', $userId, PDO::PARAM_STR);
                 $stmt->execute(); 
                 $user = $stmt->fetch(PDO::FETCH_ASSOC); 
-
-                var_dump($_SESSION['user']['profile_picture']); 
-                return 1; 
-                
+                return $user; 
             } catch (PDOException $e) { 
                 echo "Error: " . $e->getMessage();
                 return false; // Error
             }
-
-            // $stmt->close();
-            // $conn->close();
         }
+
+        // public function updateUserProfile($fname, $lname, $address, $birthday, $userId) {
+        //     try {              
+        //         $stmt = $this->db->prepare("call sp_updateUserProfileData(:fname, :lname, :address, :birthday, :uid)");
+        //         $stmt->bindParam(':fname', $fname, PDO::PARAM_STR);
+        //         $stmt->bindParam(':lname', $lname, PDO::PARAM_STR);
+        //         $stmt->bindParam(':address', $address, PDO::PARAM_STR);
+        //         $stmt->bindParam(':birthday', $birthday, PDO::PARAM_STR);
+        //         $stmt->bindParam(':uid', $userId, PDO::PARAM_STR);
+        //         try{
+        //             $stmt->execute(); 
+        //         }catch(PDOException $e) {
+        //             echo "Error:" . $e->getMessage(); 
+        //         }
+        //         $user = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        //         return $user; 
+        //     } catch (PDOException $e) { 
+        //         echo "Error: " . $e->getMessage();
+        //         return false; // Error
+        //     }
+        // }
+
+        public function updateUserProfile($first_name, $last_name, $address, $birthday, $userId) {
+            try {
+                var_dump($first_name); 
+                $stmt = $this->db->prepare("call sp_updateUserProfileData(:first_name, :last_name, :address, :birthday, :uid)");
+                $stmt->bindParam(':first_name', $first_name, PDO::PARAM_STR);
+                $stmt->bindParam(':last_name', $last_name, PDO::PARAM_STR);
+                $stmt->bindParam(':address', $address, PDO::PARAM_STR);
+                $stmt->bindParam(':birthday', $birthday, PDO::PARAM_STR);
+                $stmt->bindParam(':uid', $userId, PDO::PARAM_STR);
         
+                // Execute the stored procedure
+                $stmt->execute();
+        
+                // Fetch a single row as an associative array
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+                return $user;
+            } catch (PDOException $e) {
+                echo "Error: " . $e->getMessage();
+                return false; // Error
+            } 
+        }
     } 
-?>
+?> 

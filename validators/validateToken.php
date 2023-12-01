@@ -35,9 +35,11 @@ if(isset($headers['Authorize']) && $headers['Authorize']) {
         $userExists = checkUserExists($decoded->user_id); 
 
         $user = new User();
-        $user = $user->getUserById($decoded->user_id); 
+        $userProfile = $user->getUserProfileData($decoded->user_id); 
+        $user = $user->getUserById($decoded->user_id);
+         
         if($userExists == true) {
-            echo json_encode(array('success' => true, 'message' => 'Access granted.', 'user_id' => $decoded->user_id, 'user_info' => $user));
+            echo json_encode(array('success' => true, 'message' => 'Access granted.', 'user_id' => $decoded->user_id, 'user_info' => $user, 'user_profile' => $userProfile));
             http_response_code(200);
         }else {
             http_response_code(403);

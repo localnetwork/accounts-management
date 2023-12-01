@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: database
--- Generation Time: Nov 30, 2023 at 01:27 PM
+-- Generation Time: Dec 01, 2023 at 02:57 PM
 -- Server version: 5.7.29
 -- PHP Version: 7.4.20
 
@@ -25,7 +25,7 @@ DELIMITER $$
 --
 -- Procedures
 --
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_createUser` (IN `email` VARCHAR(255), IN `password` VARCHAR(255), IN `role` INT(255), IN `user_status` INT(255))  BEGIN
+CREATE PROCEDURE `sp_createUser` (IN `email` VARCHAR(255), IN `password` VARCHAR(255), IN `role` INT(255), IN `user_status` INT(255))  BEGIN
     DECLARE IsValidEmail BIT DEFAULT 0;
     
     
@@ -43,48 +43,66 @@ CREATE DEFINER=`root`@`%` PROCEDURE `sp_createUser` (IN `email` VARCHAR(255), IN
     END IF;
 END$$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_createUserProfile` (IN `first_name` VARCHAR(255), IN `last_name` VARCHAR(255), IN `address` VARCHAR(255), IN `birthday` VARCHAR(255), IN `user_id` INT(255))  BEGIN
+CREATE PROCEDURE `sp_createUserProfile` (IN `first_name` VARCHAR(255), IN `last_name` VARCHAR(255), IN `address` VARCHAR(255), IN `birthday` VARCHAR(255), IN `user_id` INT(255))  BEGIN
 
 INSERT INTO profile_data (first_name, last_name, address, birthday, user_id) VALUES (first_name, last_name, address, birthday, user_id);
 
 END$$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_getAllUsers` ()  BEGIN
+CREATE PROCEDURE `sp_getAllUsers` ()  BEGIN
 
 SELECT id, email FROM users;
 END$$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_getRoles` ()  BEGIN
+CREATE PROCEDURE `sp_getPasswordById` (IN `uid` INT)  BEGIN
+
+SELECT password from users where uid = id;
+
+END$$
+
+CREATE PROCEDURE `sp_getRoles` ()  BEGIN
 
 SELECT * FROM roles;
 
 END$$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_getUserById` (IN `userId` INT)  BEGIN
+CREATE PROCEDURE `sp_getUserById` (IN `userId` INT)  BEGIN
 
 SELECT id, role, user_status, email FROM users WHERE id = userId;
 
 END$$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_getUserInfo` (IN `userEmail` VARCHAR(255))  BEGIN
+CREATE PROCEDURE `sp_getUserInfo` (IN `userEmail` VARCHAR(255))  BEGIN
 
 SELECT * FROM users WHERE email = userEmail;
 
 END$$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_getUserProfileData` (IN `uid` INT)  BEGIN
+CREATE PROCEDURE `sp_getUserProfileData` (IN `uid` INT)  BEGIN
 
 SELECT * FROM profile_data WHERE uid = user_id;
 
 END$$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_getUserRole` (IN `uid` INT)  BEGIN
+CREATE PROCEDURE `sp_getUserRole` (IN `uid` INT)  BEGIN
 
 SELECT user_status, role FROM users WHERE uid = id;
 
 END$$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_userLoginPost` (IN `p_email` VARCHAR(255), IN `p_password` VARCHAR(255))  BEGIN
+CREATE PROCEDURE `sp_updateUser` (IN `userEmail` VARCHAR(255), IN `userPassword` VARCHAR(255), IN `uid` INT(255))  BEGIN
+
+UPDATE users SET email = userEmail, password = userPassword WHERE id = uid;
+
+END$$
+
+CREATE PROCEDURE `sp_updateUserProfileData` (IN `first_name` VARCHAR(255), IN `last_name` VARCHAR(255), IN `address` VARCHAR(255), IN `birthday` VARCHAR(255), IN `uid` VARCHAR(255))  BEGIN
+
+UPDATE profile_data SET first_name = first_name, last_name = last_name, address = address, birthday = birthday WHERE user_id = uid;
+
+END$$
+
+CREATE PROCEDURE `sp_userLoginPost` (IN `p_email` VARCHAR(255), IN `p_password` VARCHAR(255))  BEGIN
     DECLARE v_user_id INT;
     DECLARE v_hashed_password VARCHAR(255);
 
@@ -103,7 +121,7 @@ CREATE DEFINER=`root`@`%` PROCEDURE `sp_userLoginPost` (IN `p_email` VARCHAR(255
     END IF;
 END$$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_userWithEmailExist` (IN `userEmail` VARCHAR(255))  BEGIN
+CREATE PROCEDURE `sp_userWithEmailExist` (IN `userEmail` VARCHAR(255))  BEGIN
 
 SELECT COUNT(*) FROM users WHERE userEmail = email; 
 
@@ -137,6 +155,16 @@ CREATE TABLE `profile_data` (
   `address` varchar(255) NOT NULL,
   `user_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `profile_data`
+--
+
+INSERT INTO `profile_data` (`id`, `first_name`, `last_name`, `birthday`, `address`, `user_id`) VALUES
+(1, 'Dion', 'Potot', '2023-12-01', 'test\r\ntest', 10),
+(2, 'Diome Nike', 'Potot', '2023-11-06', 'Gabi Cordova Cebu\r\n', 8),
+(3, 'Jeff', 'Casquejo', '2023-12-01', 'United States', 11),
+(4, 'John Mark', 'Sumagang', '2023-12-01', 'Cordova', 12);
 
 -- --------------------------------------------------------
 
@@ -192,7 +220,10 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `email`, `password`, `created`, `role`, `user_status`) VALUES
 (8, 'diome.halcyonwebdesign@gmail.com', '$2y$10$0jX6vCACs5mBkT00XcCxzOMJM.vyJTvRiZb6MQ0c3eNT/Ir8TYAFG', '2023-11-29 05:35:40', 1, 2),
-(9, 'admin@gmail.com', '$2y$10$ll5vBbbxKyEeI3VSmdKk8ORt4UZr60HZ66OhQndyJX2Y1B6MFYC5i', '2023-11-29 05:38:10', 1, 2);
+(9, 'admin@gmail.com', '$2y$10$ll5vBbbxKyEeI3VSmdKk8ORt4UZr60HZ66OhQndyJX2Y1B6MFYC5i', '2023-11-29 05:38:10', 1, 2),
+(10, '111diome.halcyonwebdesign@gmail.com', '$2y$10$CNE9HbC5JcsvXK8.mCaXlejDLTMoG/Er/74h/QHCwUwIHDpQ1TzMW', '2023-12-01 01:17:58', 1, 2),
+(11, 'jeffethan19@gmail.com', '$2y$10$kP6qmozlPaS99kVjZ55XFewnRfXAHk7Knhpi50phbCmyQ2uriR4ai', '2023-12-01 11:35:22', 1, 2),
+(12, 'johnmark@gmail.com', '$2y$10$A1ck91GAq3NxiBW6oHgFNuRZtHE6365WK1L1E3c4ZXGdlMKrmGGaO', '2023-12-01 11:35:44', 1, 2);
 
 -- --------------------------------------------------------
 
@@ -271,7 +302,7 @@ ALTER TABLE `permissions`
 -- AUTO_INCREMENT for table `profile_data`
 --
 ALTER TABLE `profile_data`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -289,7 +320,7 @@ ALTER TABLE `role_permissions`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `user_status`

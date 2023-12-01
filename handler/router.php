@@ -102,7 +102,8 @@
                     'email' => $uInfo['email'],
                 ),
             );
-            // $eee['token'] = $token;
+            
+            
 
             echo json_encode(array('success' => true, 'data' => $eee));
             http_response_code(200);
@@ -165,6 +166,46 @@
         // }, $roles);
         // echo json_encode(array('success' => true, 'data' => $roleIds)); 
     // }
+
+    function updateUser() {
+        $user = new User(); 
+
+        $requiredFields = ['first_name', 'last_name', 'address', 'birthday', 'email'];
+
+        // isset($_POST['password']) ? $_POST['password'] : '';
+        
+
+        $validationResult = validateUserUpdate($_POST, $requiredFields);
+
+        if ($validationResult['success']) { 
+            $email = isset($_POST['email']) ? $_POST['email'] : '';
+            $first_name = isset($_POST['first_name']) ? $_POST['first_name'] : ''; 
+            $last_name = isset($_POST['last_name']) ? $_POST['last_name'] : ''; 
+            $address = isset($_POST['address']) ? $_POST['address'] : ''; 
+            $birthday = isset($_POST['birthday']) ? $_POST['birthday'] : ''; 
+            $current_password = isset($_POST['current_password']) ? $_POST['current_password'] : ''; 
+            $password = isset($_POST['password']) ? $_POST['password'] : '';
+            $confirm_password = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : '';
+            $user = new User();
+            $ret['userProfile'] = $user->updateUserProfile($first_name, $last_name, $address, $birthday, $_POST['userId']); 
+            $ret['id'] = $_POST['userId']; 
+
+
+            // $firstName = $userInfo['first_name'];
+            // $lastName = $userInfo['last_name'];
+            // $address = $userInfo['address'];
+            // $birthday = $userInfo['birthday'];
+
+
+            // echo json_encode(array('success' => false, 'message' => $_POST['userInfo'])); 
+            echo json_encode(array('success' => true, 'data' => $ret, 'ress' =>  $ret['userProfile']));
+            http_response_code(200);
+            
+        } else {
+            http_response_code(422); 
+            echo json_encode(array('success' => false, 'errors' => $validationResult['errors']));
+        }
+    }
 
 
 
