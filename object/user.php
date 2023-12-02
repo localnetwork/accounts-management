@@ -88,9 +88,10 @@
             } 
         }
 
-        public function getAllUsers() {
+        public function getAllUsers($search_query) {
             try {
-                $stmt = $this->db->prepare("CALL sp_getAllUsers()");
+                $stmt = $this->db->prepare("CALL sp_getAllUsers(:search_query)");
+                $stmt->bindParam(':search_query', $search_query, PDO::PARAM_STR);
                 $stmt->execute();
                 $user = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 return $user;

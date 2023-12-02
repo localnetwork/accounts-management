@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: database
--- Generation Time: Dec 01, 2023 at 02:57 PM
+-- Generation Time: Dec 02, 2023 at 02:05 PM
 -- Server version: 5.7.29
 -- PHP Version: 7.4.20
 
@@ -49,9 +49,14 @@ INSERT INTO profile_data (first_name, last_name, address, birthday, user_id) VAL
 
 END$$
 
-CREATE PROCEDURE `sp_getAllUsers` ()  BEGIN
+CREATE PROCEDURE `sp_getAllUsers` (IN `search_query` VARCHAR(255))  BEGIN
 
-SELECT id, email FROM users;
+SELECT u.id, r.name AS role_name, pd.first_name as first_name, pd.last_name as last_name, pd.address AS address, pd.birthday as birthday, us.name AS user_status, u.email FROM users u
+INNER JOIN roles r ON u.role = r.id
+INNER JOIN profile_data pd ON u.id = pd.user_id
+INNER JOIN user_status us ON u.user_status = us.id
+WHERE pd.first_name LIKE CONCAT('%', search_query, '%') OR pd.last_name LIKE CONCAT('%', search_query, '%') OR u.email LIKE CONCAT('%', search_query, '%');
+
 END$$
 
 CREATE PROCEDURE `sp_getPasswordById` (IN `uid` INT)  BEGIN
@@ -69,6 +74,15 @@ END$$
 CREATE PROCEDURE `sp_getUserById` (IN `userId` INT)  BEGIN
 
 SELECT id, role, user_status, email FROM users WHERE id = userId;
+
+END$$
+
+CREATE PROCEDURE `sp_getUserFullInfoById` (IN `uid` VARCHAR(255))  BEGIN
+
+SELECT u.id, r.name AS role_name, pd.first_name as first_name, pd.last_name as last_name, pd.address AS address, pd.birthday as birthday, us.name AS user_status, u.email FROM users u
+INNER JOIN roles r ON u.role = r.id
+INNER JOIN profile_data pd ON u.id = pd.user_id
+INNER JOIN user_status us ON u.user_status = us.id WHERE u.id = uid;
 
 END$$
 
@@ -162,9 +176,9 @@ CREATE TABLE `profile_data` (
 
 INSERT INTO `profile_data` (`id`, `first_name`, `last_name`, `birthday`, `address`, `user_id`) VALUES
 (1, 'Dion', 'Potot', '2023-12-01', 'test\r\ntest', 10),
-(2, 'Diome Nike', 'Potot', '2023-11-06', 'Gabi Cordova Cebu\r\n', 8),
 (3, 'Jeff', 'Casquejo', '2023-12-01', 'United States', 11),
-(4, 'John Mark', 'Sumagang', '2023-12-01', 'Cordova', 12);
+(4, 'John Mark', 'Sumagang', '2023-12-01', 'Cordova', 12),
+(5, 'Diome Nike', 'Potot', '2023-12-02', 'Gabi Cordova Cebu', 13);
 
 -- --------------------------------------------------------
 
@@ -219,11 +233,11 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `email`, `password`, `created`, `role`, `user_status`) VALUES
-(8, 'diome.halcyonwebdesign@gmail.com', '$2y$10$0jX6vCACs5mBkT00XcCxzOMJM.vyJTvRiZb6MQ0c3eNT/Ir8TYAFG', '2023-11-29 05:35:40', 1, 2),
 (9, 'admin@gmail.com', '$2y$10$ll5vBbbxKyEeI3VSmdKk8ORt4UZr60HZ66OhQndyJX2Y1B6MFYC5i', '2023-11-29 05:38:10', 1, 2),
 (10, '111diome.halcyonwebdesign@gmail.com', '$2y$10$CNE9HbC5JcsvXK8.mCaXlejDLTMoG/Er/74h/QHCwUwIHDpQ1TzMW', '2023-12-01 01:17:58', 1, 2),
 (11, 'jeffethan19@gmail.com', '$2y$10$kP6qmozlPaS99kVjZ55XFewnRfXAHk7Knhpi50phbCmyQ2uriR4ai', '2023-12-01 11:35:22', 1, 2),
-(12, 'johnmark@gmail.com', '$2y$10$A1ck91GAq3NxiBW6oHgFNuRZtHE6365WK1L1E3c4ZXGdlMKrmGGaO', '2023-12-01 11:35:44', 1, 2);
+(12, 'johnmark@gmail.com', '$2y$10$A1ck91GAq3NxiBW6oHgFNuRZtHE6365WK1L1E3c4ZXGdlMKrmGGaO', '2023-12-01 11:35:44', 1, 2),
+(13, 'diome.halcyonwebdesign@gmail.com', '$2y$10$6lCO9xVsRvg4JcxHDv34pOB9W63DhlrVNmo3ljqSc8wQUCno869km', '2023-12-02 07:25:23', 1, 2);
 
 -- --------------------------------------------------------
 
@@ -302,7 +316,7 @@ ALTER TABLE `permissions`
 -- AUTO_INCREMENT for table `profile_data`
 --
 ALTER TABLE `profile_data`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -320,7 +334,7 @@ ALTER TABLE `role_permissions`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `user_status`

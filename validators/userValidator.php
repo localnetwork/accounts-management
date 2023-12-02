@@ -181,8 +181,12 @@
 
         if (empty($errors)) {
             $new_password = password_hash($_POST['password'], PASSWORD_DEFAULT);  
+            $test = $user->updateUser($_POST['email'], $new_password, $_POST['userId']); 
+
+            $errors['test'] = $test; 
+            
             return array('success' => true, 'data' => $data);
-            $user->userUpdate($_POST['email'], $new_password, $_POST['userId']); 
+            
         } else {
             return array('success' => false, 'errors' => $errors);
         }

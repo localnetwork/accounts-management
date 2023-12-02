@@ -86,11 +86,6 @@
             $email = isset($_POST['email']) ? $_POST['email'] : '';
             $password = isset($_POST['password']) ? $_POST['password'] : '';
 
-            // $userInfo = array(
-            //     "email" => $email,
-            //     "password" => $password,
-            // ); 
-
             $user = new User();
             $ret = $user->userLogin($email, $password); 
             $uInfo = $user->getUserInfo($email); 
@@ -102,8 +97,6 @@
                     'email' => $uInfo['email'],
                 ),
             );
-            
-            
 
             echo json_encode(array('success' => true, 'data' => $eee));
             http_response_code(200);
@@ -116,8 +109,9 @@
 
 
     function getAllUsers() {
+        $search_query = $_POST['searchQuery']; 
         $users = new User();
-        $users = $users->getAllUsers();
+        $users = $users->getAllUsers($search_query);
         echo json_encode(array('success' => true, 'data' => $users)); 
     }
 
