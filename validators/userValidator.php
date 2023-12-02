@@ -162,6 +162,10 @@
             $errors['confirm_password'] = $password_error;
         }
 
+        if(strlen($_POST['password']) > 0 || strlen($_POST['confirm_password']) > 0) {
+            $errors['current_password'] = 'Current password is required.'; 
+        }
+
         if(isset($_POST['current_password']) && $_POST['current_password'] && $_POST['password'] != $_POST['confirm_password']) {
             $errors['password'] = 'Password does not match.';
             $errors['confirm_password'] = 'Password does not match.';
