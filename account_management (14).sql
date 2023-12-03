@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: database
--- Generation Time: Dec 02, 2023 at 02:05 PM
+-- Generation Time: Dec 03, 2023 at 02:08 PM
 -- Server version: 5.7.29
 -- PHP Version: 7.4.20
 
@@ -49,6 +49,25 @@ INSERT INTO profile_data (first_name, last_name, address, birthday, user_id) VAL
 
 END$$
 
+CREATE PROCEDURE `sp_deleteUserById` (IN `uid` INT)  BEGIN
+
+DELETE FROM `profile_data` WHERE user_id = uid;  
+DELETE FROM `users` WHERE id = uid;
+
+END$$
+
+CREATE PROCEDURE `sp_getAllStudents` (IN `search_query` VARCHAR(255))  BEGIN
+
+SELECT u.role, u.id, r.name AS role_name, pd.first_name as first_name, pd.last_name as last_name, pd.address AS address, pd.birthday as birthday, us.name AS user_status, u.email FROM users u
+INNER JOIN roles r ON u.role = r.id
+INNER JOIN profile_data pd ON u.id = pd.user_id
+INNER JOIN user_status us ON u.user_status = us.id
+WHERE (pd.first_name LIKE CONCAT('%', search_query, '%') OR pd.last_name LIKE CONCAT('%', search_query, '%') OR u.email LIKE CONCAT('%', search_query, '%')) AND
+
+u.role = 3;
+
+END$$
+
 CREATE PROCEDURE `sp_getAllUsers` (IN `search_query` VARCHAR(255))  BEGIN
 
 SELECT u.id, r.name AS role_name, pd.first_name as first_name, pd.last_name as last_name, pd.address AS address, pd.birthday as birthday, us.name AS user_status, u.email FROM users u
@@ -71,9 +90,14 @@ SELECT * FROM roles;
 
 END$$
 
-CREATE PROCEDURE `sp_getUserById` (IN `userId` INT)  BEGIN
+CREATE PROCEDURE `sp_getUserById` (IN `userId` VARCHAR(255))  BEGIN
 
-SELECT id, role, user_status, email FROM users WHERE id = userId;
+SELECT u.id, u.role, u.user_status, u.email, pd.first_name AS first_name, pd.last_name AS last_name, pd.address AS address, pd.birthday AS birthday, r.name AS role_name FROM users u 
+
+INNER JOIN profile_data pd ON u.id = pd.user_id 
+INNER JOIN roles r ON u.role = r.id
+
+WHERE u.id = userId;
 
 END$$
 
@@ -83,6 +107,16 @@ SELECT u.id, r.name AS role_name, pd.first_name as first_name, pd.last_name as l
 INNER JOIN roles r ON u.role = r.id
 INNER JOIN profile_data pd ON u.id = pd.user_id
 INNER JOIN user_status us ON u.user_status = us.id WHERE u.id = uid;
+
+END$$
+
+CREATE PROCEDURE `sp_getUserFullProfile` (IN `uid` INT)  BEGIN
+
+SELECT u.id, r.name AS role_name, pd.first_name as first_name, pd.last_name as last_name, pd.address AS address, pd.birthday as birthday, us.name AS user_status, u.email FROM users u
+INNER JOIN roles r ON u.role = r.id
+INNER JOIN profile_data pd ON u.id = pd.user_id
+INNER JOIN user_status us ON u.user_status = us.id
+WHERE u.id = uid;
 
 END$$
 
@@ -107,6 +141,12 @@ END$$
 CREATE PROCEDURE `sp_updateUser` (IN `userEmail` VARCHAR(255), IN `userPassword` VARCHAR(255), IN `uid` INT(255))  BEGIN
 
 UPDATE users SET email = userEmail, password = userPassword WHERE id = uid;
+
+END$$
+
+CREATE PROCEDURE `sp_updateUserById` (IN `userEmail` VARCHAR(255), IN `userPassword` VARCHAR(255), IN `userStatus` VARCHAR(255), IN `uid` VARCHAR(255))  BEGIN
+
+UPDATE users SET email = userEmail, password = userPassword, user_status = userStatus WHERE id = uid;
 
 END$$
 
@@ -175,10 +215,14 @@ CREATE TABLE `profile_data` (
 --
 
 INSERT INTO `profile_data` (`id`, `first_name`, `last_name`, `birthday`, `address`, `user_id`) VALUES
-(1, 'Dion', 'Potot', '2023-12-01', 'test\r\ntest', 10),
-(3, 'Jeff', 'Casquejo', '2023-12-01', 'United States', 11),
-(4, 'John Mark', 'Sumagang', '2023-12-01', 'Cordova', 12),
-(5, 'Diome Nike', 'Potot', '2023-12-02', 'Gabi Cordova Cebu', 13);
+(3, 'Jeffff666', 'Casquejooosss', '2023-12-01', 'United States', 11),
+(10, 'admin', 'admin', '2023-12-03', 'admin', 18),
+(12, 'Dion', 'Potot', '2023-12-03', 'test\r\ntest', 20),
+(14, 'John Mark', 'Sumagang', '2023-12-03', 'cordova', 22),
+(15, 'Faculty', 'Name', '2023-12-03', 'USA', 23),
+(16, 'faculty1', 'faculty1', '2023-12-01', 'faculty1', 24),
+(18, 'student1', 'student1', '2023-12-03', 'student1', 26),
+(19, 'student2222', 'student2', '2023-12-03', 'student2', 27);
 
 -- --------------------------------------------------------
 
@@ -233,11 +277,14 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `email`, `password`, `created`, `role`, `user_status`) VALUES
-(9, 'admin@gmail.com', '$2y$10$ll5vBbbxKyEeI3VSmdKk8ORt4UZr60HZ66OhQndyJX2Y1B6MFYC5i', '2023-11-29 05:38:10', 1, 2),
-(10, '111diome.halcyonwebdesign@gmail.com', '$2y$10$CNE9HbC5JcsvXK8.mCaXlejDLTMoG/Er/74h/QHCwUwIHDpQ1TzMW', '2023-12-01 01:17:58', 1, 2),
-(11, 'jeffethan19@gmail.com', '$2y$10$kP6qmozlPaS99kVjZ55XFewnRfXAHk7Knhpi50phbCmyQ2uriR4ai', '2023-12-01 11:35:22', 1, 2),
-(12, 'johnmark@gmail.com', '$2y$10$A1ck91GAq3NxiBW6oHgFNuRZtHE6365WK1L1E3c4ZXGdlMKrmGGaO', '2023-12-01 11:35:44', 1, 2),
-(13, 'diome.halcyonwebdesign@gmail.com', '$2y$10$6lCO9xVsRvg4JcxHDv34pOB9W63DhlrVNmo3ljqSc8wQUCno869km', '2023-12-02 07:25:23', 1, 2);
+(11, 'jeffethan19@gmail.com', '$2y$10$YhdbYortfA/UlKzZU6SZnOFHfU/wXE6hx6HykYO.Zed9sS.WM4IRe', '2023-12-01 11:35:22', 1, 2),
+(18, 'admin@admin.com', '$2y$10$PcEIfLuh3OXBhtCXr90/OeC5sVksMqvNUqJSSIZ9Bbm4/NRCM7gka', '2023-12-03 13:51:11', 1, 2),
+(20, 'diome.halcyonwebdesign@gmail.com', '$2y$10$C/y7h8sUiGMjm1RmH0ljeuvwIFvw3ZrWCdNb2873BUUJYPe2cgEGq', '2023-12-03 13:52:34', 1, 2),
+(22, 'john@mark.com', '$2y$10$s3WfyT8SWsQXSnCkEf7O7e/QKhg2ZitR7T.6sLeDpEOqI4MA8zUTu', '2023-12-03 14:03:04', 3, 2),
+(23, 'faculty@faculty.com', '$2y$10$kdLb5ozbWfLiSj63zowL8.cN9crgmnGixq3HuEdpqc9m4DPM1i5TS', '2023-12-03 14:03:38', 2, 2),
+(24, 'faculty1@faculty.com', '$2y$10$umLGErZOo8ct.ycllyvEyeKQRdPR5Iqoapcui0wPLk/TZs8NTjs.e', '2023-12-03 14:03:54', 2, 2),
+(26, 'student1@student1.com', '$2y$10$mGysZNzjXixjQg6FyylVMuDT9Tsgv4xlXhot2Qj/OM24.49JnzJuy', '2023-12-03 14:05:24', 3, 2),
+(27, 'student2@student2.com', '$2y$10$lRtvOkzP/3Re7pJaXDwoVOp30hFNI/XyCaxq6Q./l2BotOqMJx84e', '2023-12-03 14:05:36', 3, 2);
 
 -- --------------------------------------------------------
 
@@ -316,7 +363,7 @@ ALTER TABLE `permissions`
 -- AUTO_INCREMENT for table `profile_data`
 --
 ALTER TABLE `profile_data`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -334,7 +381,7 @@ ALTER TABLE `role_permissions`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `user_status`

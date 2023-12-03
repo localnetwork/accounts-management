@@ -101,6 +101,32 @@
             } 
         }
 
+        public function getAllStudents($search_query) {
+            try {
+                $stmt = $this->db->prepare("CALL sp_getAllStudents(:search_query)");
+                $stmt->bindParam(':search_query', $search_query, PDO::PARAM_STR);
+                $stmt->execute();
+                $user = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                return $user;
+            } catch (PDOException $e) {
+                echo "Error: " . $e->getMessage();
+                return false; // Error 
+            } 
+        }
+
+        public function getUserProfile($uid) {
+            try {
+                $stmt = $this->db->prepare("CALL sp_getUserFullProfile(:uid)");
+                $stmt->bindParam(':uid', $uid, PDO::PARAM_STR);
+                $stmt->execute();
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                return $user;
+            } catch (PDOException $e) {
+                echo "Error: " . $e->getMessage();
+                return false; // Error 
+            } 
+        }
+
 
         public function getUserById($userId) {
             try {
@@ -121,6 +147,19 @@
                 $stmt->bindParam(':uid', $userId, PDO::PARAM_STR);
                 $stmt->execute();
                 $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                return $user;
+            } catch (PDOException $e) {
+                echo "Error: " . $e->getMessage();
+                return false; // Error 
+            } 
+        }
+
+        public function deleteUserById($userId) {
+            try {
+                $stmt = $this->db->prepare("CALL sp_deleteUserById(:uid)");
+                $stmt->bindParam(':uid', $userId, PDO::PARAM_STR);
+                $stmt->execute();
+                $user = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 return $user;
             } catch (PDOException $e) {
                 echo "Error: " . $e->getMessage();
@@ -183,6 +222,22 @@
             }
         }
 
+        public function updateUserById($email, $password, $status, $userId) {
+            try {              
+                $stmt = $this->db->prepare("call sp_updateUserById(:userEmail, :userPassword, :userStatus, :uid)");
+                $stmt->bindParam(':userEmail', $email, PDO::PARAM_STR);
+                $stmt->bindParam(':userPassword', $password, PDO::PARAM_STR);
+                $stmt->bindParam(':userStatus', $status, PDO::PARAM_STR);
+                $stmt->bindParam(':uid', $userId, PDO::PARAM_STR);
+                $stmt->execute(); 
+                $user = $stmt->fetch(PDO::FETCH_ASSOC); 
+                return $user; 
+            } catch (PDOException $e) { 
+                echo "Error: " . $e->getMessage();
+                return false; // Error
+            }
+        }
+
         // public function updateUserProfile($fname, $lname, $address, $birthday, $userId) {
         //     try {              
         //         $stmt = $this->db->prepare("call sp_updateUserProfileData(:fname, :lname, :address, :birthday, :uid)");
@@ -206,7 +261,6 @@
 
         public function updateUserProfile($first_name, $last_name, $address, $birthday, $userId) {
             try {
-                var_dump($first_name); 
                 $stmt = $this->db->prepare("call sp_updateUserProfileData(:first_name, :last_name, :address, :birthday, :uid)");
                 $stmt->bindParam(':first_name', $first_name, PDO::PARAM_STR);
                 $stmt->bindParam(':last_name', $last_name, PDO::PARAM_STR);

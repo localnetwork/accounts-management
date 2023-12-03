@@ -108,14 +108,6 @@
     function validateUserUpdate($data, $requiredFields) {
         $user = new User();
         $errors = array();
-        // $errors['test'] = $_POST['current_password']; 
-        // if(!empty($_POST['current_password'])) {
-        //     $errors['not_empty'] = "Not empty"; 
-        // }
-        // if(!empty($_POST['current_password']) && (empty($_POST['password']) || empty($_POST['confirm_password']))) {
-            // $errors['password'] = 'Password is required.';  
-            // $errors['confirm_password'] = 'Confirm Password is required.';  
-        // }
 
         if($_POST['current_password'] != '') {
             if ($_POST['password'] == 'undefined' || $_POST['confirm_password'] == 'undefined') {
@@ -162,10 +154,6 @@
             $errors['confirm_password'] = $password_error;
         }
 
-        if(strlen($_POST['password']) > 1 || strlen($_POST['confirm_password']) > 1 && strlen($_POST['current_password']) == 0) {
-            $errors['current_password'] = 'Current password is required.'; 
-        }
-
         if(isset($_POST['current_password']) && $_POST['current_password'] && $_POST['password'] != $_POST['confirm_password']) {
             $errors['password'] = 'Password does not match.';
             $errors['confirm_password'] = 'Password does not match.';
@@ -183,12 +171,118 @@
             }
         } 
 
-        if (empty($errors)) {
+
+        $oldPassword = $user->getPasswordById($_POST['userId']);   
+        if(empty($_POST['password'])) {
+            $new_password = $oldPassword['password']; 
+        }else {
             $new_password = password_hash($_POST['password'], PASSWORD_DEFAULT);  
+        }
+
+
+        if (empty($errors)) {
+            // $new_password = password_hash($_POST['password'], PASSWORD_DEFAULT);  
             $test = $user->updateUser($_POST['email'], $new_password, $_POST['userId']); 
 
+
             $errors['test'] = $test; 
+
+            return array('success' => true, 'data' => $data);
             
+        } else {
+            return array('success' => false, 'errors' => $errors);
+        }
+
+    }
+
+    function validateUserDelete($data) {
+        $user = new User();
+        $findUser = $user->getUserById($_POST['userId']);
+
+        $errors = array(); 
+
+        if(!$findUser) {
+            $errors['general'][] = 'User not found.'; 
+        }
+        if($_POST['currentUID'] == $_POST['userId']) {
+            $errors['general'][] = "You're not allowed to delete your own account."; 
+        }
+
+        if($_POST['userId'] == 3) {
+            $errors['general'][] = 'You are not allowed to delete a user.';
+        }
+
+        if($_POST['currentUserRole'] == 3) {
+            $errors['general'][] = "You're not allowed to do this function."; 
+        }elseif($_POST['currentUserRole'] == 2 && $_POST['userRole'] == 1) {
+            $errors['general'][] = "You're not allowed to delete an admin account.";
+        }
+
+
+        if (empty($errors)) {
+            $test = $user->deleteUserById($_POST['userId']);  
+            $errors['test'] = $test; 
+
+            return array('success' => true, 'data' => $data);
+            
+        } else {
+            return array('success' => false, 'errors' => $errors);
+        }
+    }
+
+    function validateUpdateById($data, $requiredFields) {
+        $user = new User();
+        $errors = array();
+
+        if($_POST['password'] != 'undefined' && $_POST['confirm_password'] == 'undefined') {
+            $errors['confirm_password'] = 'Confirm Password is required.'; 
+        }elseif($_POST['confirm_password'] != 'undefined' && $_POST['password'] == 'undefined') {
+            $errors['password'] = 'New Password is required.';  
+        }
+        if($_POST['password'] != $_POST['confirm_password']) {
+            $errors['password'] = 'New Password does not match to confirm password.';  
+            $errors['confirm_password'] = 'Confirm password does not match to new password.';  
+        }
+
+        if($_POST['currentUID'] == $_POST['userId'] && $_POST['user_status'] == 1) {
+            $errors['general'][] = "You can't disable your own account."; 
+        }
+
+        if($_POST['currentUserRole'] == 3) {
+            $errors['general'][] = "You're not allowed to do this function."; 
+        }elseif($_POST['currentUserRole'] == 2 && $_POST['userRole'] == 1) {
+            $errors['general'][] = "You're not allowed to update an admin account.";
+        }
+
+        if($_POST['currentUserStatus'] == 1) {
+            $errors['user_status'] = "Unable to save. Your account is blocked."; 
+        }
+
+        if(isset($data['email']) && $data['email'] != $_POST['email'] && userExists($_POST['email'])) {
+            $errors['email'] = 'Email is already taken. Please try another';
+        }
+        foreach ($requiredFields as $field) {
+            if (empty($data[$field])) {
+                $errors[$field] = ucfirst(str_replace('_', ' ', $field)) . ' is required.';
+            }
+        } 
+
+        $oldPassword = $user->getPasswordById($_POST['userId']);   
+        if(empty($_POST['password'])) {
+            $new_password = $oldPassword['password']; 
+        }else {
+            $new_password = password_hash($_POST['password'], PASSWORD_DEFAULT);  
+        }
+
+        if (empty($errors)) {
+            
+            
+            
+            
+            $test = $user->updateUserById($_POST['email'], $new_password, $_POST['user_status'], $_POST['userId']); 
+
+            $errors['test'] = $test; 
+
             return array('success' => true, 'data' => $data);
             
         } else {

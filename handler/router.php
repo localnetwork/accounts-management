@@ -114,14 +114,19 @@
         $users = $users->getAllUsers($search_query);
         echo json_encode(array('success' => true, 'data' => $users)); 
     }
+    function getAllStudents() {
+        $search_query = $_POST['searchQuery']; 
+        $users = new User();
+        $users = $users->getAllStudents($search_query);
+        echo json_encode(array('success' => true, 'data' => $users)); 
+    }
 
     function getUserById() {
-        $userId = $_POST['userId'] ?? null;
+        $userId = isset($_POST['userId']) ? $_POST['userId'] : '';
+        // $userId = $_POST['userId'] ?? null;
         if ($userId !== null) {
-
             $user = new User();
             $user = $user->getUserById($userId); 
-
 
             echo json_encode(array('success' => true, 'data' => $user));
             http_response_code(200);
@@ -140,6 +145,15 @@
         //     return $role['role_id'];
         // }, $roles);
         echo json_encode(array('success' => true, 'data' => $role[0], 'status' => $role[0]['user_status'])); 
+    }
+
+    function getUserProfile() {
+        $userId = $_POST['userId'] ?? null;
+        $user = new User();
+
+        $userProfile = $user->getUserProfile($userId); 
+
+        echo json_encode(array('success' => true, 'data' => $userProfile)); 
     }
 
     function getUserProfileData() {
@@ -166,9 +180,6 @@
 
         $requiredFields = ['first_name', 'last_name', 'address', 'birthday', 'email'];
 
-        // isset($_POST['password']) ? $_POST['password'] : '';
-        
-
         $validationResult = validateUserUpdate($_POST, $requiredFields);
 
         if ($validationResult['success']) { 
@@ -184,15 +195,53 @@
             $ret['userProfile'] = $user->updateUserProfile($first_name, $last_name, $address, $birthday, $_POST['userId']); 
             $ret['id'] = $_POST['userId']; 
 
-
-            // $firstName = $userInfo['first_name'];
-            // $lastName = $userInfo['last_name'];
-            // $address = $userInfo['address'];
-            // $birthday = $userInfo['birthday'];
-
-
-            // echo json_encode(array('success' => false, 'message' => $_POST['userInfo'])); 
             echo json_encode(array('success' => true, 'data' => $ret, 'ress' =>  $ret['userProfile']));
+            http_response_code(200);
+            
+        } else {
+            http_response_code(422); 
+            echo json_encode(array('success' => false, 'errors' => $validationResult['errors']));
+        }
+    }
+
+    function deleteUser() {
+        require_once('../validators/userValidator.php'); 
+        $requiredFields = []; 
+        $user = new User(); 
+
+        $validationResult = validateUserDelete($_POST, $requiredFields);
+
+        if ($validationResult['success']) { 
+            echo json_encode(array('success' => true, 'message' => 'User deleted successfully')); 
+            
+        }else {
+            http_response_code(422); 
+            echo json_encode(array('success' => false, 'errors' => $validationResult['errors']));
+        }
+    }
+
+    function updateUserByRoute() {
+        $user = new User();
+        $currentUID = $_POST['currentUID'];  
+        $userId = $_POST['userId']; 
+
+        $requiredFields = ['first_name', 'last_name', 'address', 'birthday', 'email'];
+
+        $validationResult = validateUpdateById($_POST, $requiredFields);
+
+        if ($validationResult['success']) { 
+            $email = isset($_POST['email']) ? $_POST['email'] : '';
+            $first_name = isset($_POST['first_name']) ? $_POST['first_name'] : ''; 
+            $last_name = isset($_POST['last_name']) ? $_POST['last_name'] : ''; 
+            $address = isset($_POST['address']) ? $_POST['address'] : ''; 
+            $birthday = isset($_POST['birthday']) ? $_POST['birthday'] : ''; 
+            $password = isset($_POST['password']) ? $_POST['password'] : '';
+            $confirm_password = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : '';
+            $user = new User();
+            $ret['userProfile'] = $user->updateUserProfile($first_name, $last_name, $address, $birthday, $_POST['userId']); 
+            $ret['id'] = $_POST['userId']; 
+
+            echo json_encode(array('success' => true, 'data' => $ret, 'ress' =>  $ret['userProfile'], '12' => $_POST['userId']));
             http_response_code(200);
             
         } else {
