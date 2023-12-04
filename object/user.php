@@ -222,12 +222,13 @@
             }
         }
 
-        public function updateUserById($email, $password, $status, $userId) {
+        public function updateUserById($email, $password, $status, $role_id, $userId) {
             try {              
-                $stmt = $this->db->prepare("call sp_updateUserById(:userEmail, :userPassword, :userStatus, :uid)");
+                $stmt = $this->db->prepare("call sp_updateUserById(:userEmail, :userPassword, :userStatus, :role_id, :uid)");
                 $stmt->bindParam(':userEmail', $email, PDO::PARAM_STR);
                 $stmt->bindParam(':userPassword', $password, PDO::PARAM_STR);
                 $stmt->bindParam(':userStatus', $status, PDO::PARAM_STR);
+                $stmt->bindParam(':role_id', $role_id, PDO::PARAM_STR);
                 $stmt->bindParam(':uid', $userId, PDO::PARAM_STR);
                 $stmt->execute(); 
                 $user = $stmt->fetch(PDO::FETCH_ASSOC); 

@@ -248,12 +248,21 @@
             $errors['general'][] = "You can't disable your own account."; 
         }
 
+        if($_POST['currentUID'] == $_POST['userId'] && $_POST['currentUserRole'] != $_POST['role']) {
+            $errors['general'][] = "You're not allowed to change your own role."; 
+        }
+
         if($_POST['currentUserRole'] == 3) {
             $errors['general'][] = "You're not allowed to do this function."; 
         }elseif($_POST['currentUserRole'] == 2 && $_POST['userRole'] == 1) {
             $errors['general'][] = "You're not allowed to update an admin account.";
         }
 
+        
+        if($_POST['userRole'] !== $_POST['role'] && $_POST['currentUserRole'] == 2 || $_POST['currentUserRole'] == 3) {
+            $errors['general'][] = "You're not allowed to change roles.";
+        }   
+ 
         if($_POST['currentUserStatus'] == 1) {
             $errors['user_status'] = "Unable to save. Your account is blocked."; 
         }
@@ -274,12 +283,14 @@
             $new_password = password_hash($_POST['password'], PASSWORD_DEFAULT);  
         }
 
+        if($_POST['currentUserRole'] != 1) {
+            $userRole = $_POST['userRole'];
+        }else {
+            $userRole = $_POST['role']; 
+        }
+
         if (empty($errors)) {
-            
-            
-            
-            
-            $test = $user->updateUserById($_POST['email'], $new_password, $_POST['user_status'], $_POST['userId']); 
+            $test = $user->updateUserById($_POST['email'], $new_password, $_POST['user_status'], $userRole, $_POST['userId']); 
 
             $errors['test'] = $test; 
 

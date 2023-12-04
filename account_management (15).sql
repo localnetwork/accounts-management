@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: database
--- Generation Time: Dec 03, 2023 at 02:08 PM
+-- Generation Time: Dec 04, 2023 at 05:04 AM
 -- Server version: 5.7.29
 -- PHP Version: 7.4.20
 
@@ -144,9 +144,9 @@ UPDATE users SET email = userEmail, password = userPassword WHERE id = uid;
 
 END$$
 
-CREATE PROCEDURE `sp_updateUserById` (IN `userEmail` VARCHAR(255), IN `userPassword` VARCHAR(255), IN `userStatus` VARCHAR(255), IN `uid` VARCHAR(255))  BEGIN
+CREATE PROCEDURE `sp_updateUserById` (IN `userEmail` VARCHAR(255), IN `userPassword` VARCHAR(255), IN `userStatus` VARCHAR(255), IN `role_id` VARCHAR(255), IN `uid` VARCHAR(255))  BEGIN
 
-UPDATE users SET email = userEmail, password = userPassword, user_status = userStatus WHERE id = uid;
+UPDATE users SET email = userEmail, password = userPassword, user_status = userStatus, role = role_id WHERE id = uid;
 
 END$$
 
@@ -215,14 +215,14 @@ CREATE TABLE `profile_data` (
 --
 
 INSERT INTO `profile_data` (`id`, `first_name`, `last_name`, `birthday`, `address`, `user_id`) VALUES
-(3, 'Jeffff666', 'Casquejooosss', '2023-12-01', 'United States', 11),
+(3, 'Jeff', 'Casquejo', '2023-12-01', 'United States', 11),
 (10, 'admin', 'admin', '2023-12-03', 'admin', 18),
 (12, 'Dion', 'Potot', '2023-12-03', 'test\r\ntest', 20),
 (14, 'John Mark', 'Sumagang', '2023-12-03', 'cordova', 22),
 (15, 'Faculty', 'Name', '2023-12-03', 'USA', 23),
 (16, 'faculty1', 'faculty1', '2023-12-01', 'faculty1', 24),
 (18, 'student1', 'student1', '2023-12-03', 'student1', 26),
-(19, 'student2222', 'student2', '2023-12-03', 'student2', 27);
+(19, 'student222222', 'student222', '2023-12-03', 'student222', 27);
 
 -- --------------------------------------------------------
 
@@ -277,14 +277,14 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `email`, `password`, `created`, `role`, `user_status`) VALUES
-(11, 'jeffethan19@gmail.com', '$2y$10$YhdbYortfA/UlKzZU6SZnOFHfU/wXE6hx6HykYO.Zed9sS.WM4IRe', '2023-12-01 11:35:22', 1, 2),
-(18, 'admin@admin.com', '$2y$10$PcEIfLuh3OXBhtCXr90/OeC5sVksMqvNUqJSSIZ9Bbm4/NRCM7gka', '2023-12-03 13:51:11', 1, 2),
-(20, 'diome.halcyonwebdesign@gmail.com', '$2y$10$C/y7h8sUiGMjm1RmH0ljeuvwIFvw3ZrWCdNb2873BUUJYPe2cgEGq', '2023-12-03 13:52:34', 1, 2),
-(22, 'john@mark.com', '$2y$10$s3WfyT8SWsQXSnCkEf7O7e/QKhg2ZitR7T.6sLeDpEOqI4MA8zUTu', '2023-12-03 14:03:04', 3, 2),
+(11, 'jeffethan19@gmail.com', '$2y$10$tiL0r/uQe8BdfDzgy1cm1uQ4phpQmvU5DX9Ax7f33vOiCI7.lIMQC', '2023-12-01 11:35:22', 1, 2),
+(18, 'admin@admin.com', '$2y$10$kxajugQJB34Cf9NBmqK.0OFguYtdw5PlN04T09ABOq9uextlLAtey', '2023-12-03 13:51:11', 1, 2),
+(20, 'diome.halcyonwebdesign@gmail.com', '$2y$10$dqpsZORXFs3Sf69RjflRruV.oIA99Iv1nShY7/8dFkvb6qUm5BMWu', '2023-12-03 13:52:34', 1, 2),
+(22, 'john@mark.com', '$2y$10$wis.eFVykFX2peIv7kuQF.WOzAc.VxBh3.MRP7ziuEo0OztSCbFgq', '2023-12-03 14:03:04', 3, 2),
 (23, 'faculty@faculty.com', '$2y$10$kdLb5ozbWfLiSj63zowL8.cN9crgmnGixq3HuEdpqc9m4DPM1i5TS', '2023-12-03 14:03:38', 2, 2),
 (24, 'faculty1@faculty.com', '$2y$10$umLGErZOo8ct.ycllyvEyeKQRdPR5Iqoapcui0wPLk/TZs8NTjs.e', '2023-12-03 14:03:54', 2, 2),
-(26, 'student1@student1.com', '$2y$10$mGysZNzjXixjQg6FyylVMuDT9Tsgv4xlXhot2Qj/OM24.49JnzJuy', '2023-12-03 14:05:24', 3, 2),
-(27, 'student2@student2.com', '$2y$10$lRtvOkzP/3Re7pJaXDwoVOp30hFNI/XyCaxq6Q./l2BotOqMJx84e', '2023-12-03 14:05:36', 3, 2);
+(26, 'student1@student1.com', '$2y$10$hBecelqhpNriHy1OuZ4OeuqV5UOFdUbkKNQRMAR5YbbGbFGBXpTH2', '2023-12-03 14:05:24', 3, 2),
+(27, 'student2@student2.com', '$2y$10$I6RDtyir/m1Kx5mv03R62Ohv/tHPRKH.YfvkOFe1hC4s.UhYJvdr6', '2023-12-03 14:05:36', 3, 2);
 
 -- --------------------------------------------------------
 
@@ -363,7 +363,7 @@ ALTER TABLE `permissions`
 -- AUTO_INCREMENT for table `profile_data`
 --
 ALTER TABLE `profile_data`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -381,7 +381,7 @@ ALTER TABLE `role_permissions`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `user_status`
