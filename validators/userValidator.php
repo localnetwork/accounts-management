@@ -170,11 +170,6 @@
 
 
         if(empty($_POST['password']) || $_POST['password'] == 'undefined') {
-            $errors['empty'] = 'empty';
-        }else {
-            $errors['not_empty'] = 'not empty'; 
-        }
-        if(empty($_POST['password']) || $_POST['password'] == 'undefined') {
             $new_password = $oldPassword['password']; 
         }else {
             $new_password = password_hash($_POST['password'], PASSWORD_DEFAULT);  
