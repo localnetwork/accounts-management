@@ -114,19 +114,13 @@
                 $errors['password'] = 'New Password is required.';  
                 $errors['confirm_password'] = 'Confirm Password is required.';  
             } else {
-                // 'password' and 'confirm_password' are set, you can proceed with your logic
                 $current_password = $_POST['current_password'];
                 $new_password = $_POST['password'];
                 $confirm_password = $_POST['confirm_password'];
         
-                // Now you can perform further validation or update the password
-                // For example, you might check if the new password matches the confirm password
                 if ($new_password !== $confirm_password) {
                     $errors['password'] = 'New Password does not match to confirm password.';  
                     $errors['confirm_password'] = 'Confirm password does not match to new password.';  
-                } else {
-                    // Your logic for updating the password goes here
-                    // ...
                 }
             }
         }
@@ -173,11 +167,18 @@
 
 
         $oldPassword = $user->getPasswordById($_POST['userId']);   
-        if(empty($_POST['password'])) {
+
+
+        if(empty($_POST['password']) || $_POST['password'] == 'undefined') {
+            $errors['empty'] = 'empty';
+        }else {
+            $errors['not_empty'] = 'not empty'; 
+        }
+        if(empty($_POST['password']) || $_POST['password'] == 'undefined') {
             $new_password = $oldPassword['password']; 
         }else {
             $new_password = password_hash($_POST['password'], PASSWORD_DEFAULT);  
-        }
+        } 
 
 
         if (empty($errors)) {
