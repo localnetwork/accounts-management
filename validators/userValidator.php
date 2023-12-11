@@ -272,12 +272,20 @@
             }
         } 
 
+        // $oldPassword = $user->getPasswordById($_POST['userId']);   
+        // if(empty($_POST['password'])) {
+        //     $new_password = $oldPassword['password']; 
+        // }else {
+        //     $new_password = password_hash($_POST['password'], PASSWORD_DEFAULT);  
+        // }
         $oldPassword = $user->getPasswordById($_POST['userId']);   
-        if(empty($_POST['password'])) {
+
+
+        if(empty($_POST['password']) || $_POST['password'] == 'undefined') {
             $new_password = $oldPassword['password']; 
         }else {
             $new_password = password_hash($_POST['password'], PASSWORD_DEFAULT);  
-        }
+        }  
 
         if($_POST['currentUserRole'] != 1) {
             $userRole = $_POST['userRole'];
