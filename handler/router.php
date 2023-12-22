@@ -19,6 +19,7 @@
 
     function createUser() {
         require_once('../validators/userValidator.php');
+        require_once('../notifications/userNotification.php');
         $requiredFields = ['first_name', 'last_name', 'address', 'birthday', 'email', 'password', 'confirm_password', 'user_status', 'role'];
         // $requiredFields = ['first_name', 'last_name',  'email', 'password', 'confirm_password'];
 
@@ -35,6 +36,11 @@
             $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
             $role = isset($_POST['role']) ? $_POST['role'] : '';
             $user_status = isset($_POST['user_status']) ? $_POST['user_status'] : '';
+
+
+            creationEmail($email, $first_name, $password);  
+
+
             $userInfo = array(
                 "email" => $email,
                 "password" => $password,
