@@ -113,6 +113,26 @@
         }
     } 
 
+    function passwordReset() {
+        require_once('../notifications/userNotification.php'); 
+        require_once('../validators/userValidator.php');
+        
+        $first_name = isset($_POST['first_name']) ? $_POST['first_name'] : ''; 
+        $email = $_POST['email']; 
+
+        resetPasswordEmail($email, $first_name, 'CPC2023'); 
+
+        $validationResult = validateResetPassword($_POST);
+        if ($validationResult['success']) { 
+            echo json_encode(array('success' => true, 'message' => 'Password has been reset successfully.'));
+            http_response_code(200);
+            
+        } else {
+            http_response_code(422); 
+            echo json_encode(array('success' => false, 'errors' => $validationResult['errors']));
+        }
+
+    }
 
     function getAllUsers() {
         $search_query = $_POST['searchQuery']; 

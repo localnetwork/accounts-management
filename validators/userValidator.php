@@ -306,4 +306,23 @@
 
     }
 
+    function validateResetPassword($data) {
+        $user = new User();
+        $errors = array();
+
+        if($_POST['currentUserRole'] != 1) {
+            $errors['general'][] = "You're not allowed to do this function."; 
+        }
+
+        if (empty($errors)) {
+
+            $new_password = password_hash('CPC2023', PASSWORD_DEFAULT); // Static Password.
+            $test = $user->updateUserPassword($new_password, $_POST['userId']); 
+            $errors['test'] = $test;  
+            return array('success' => true, 'data' => $data); 
+            
+        } else { 
+            return array('success' => false, 'errors' => $errors);
+        }
+    }
 ?>

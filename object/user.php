@@ -206,6 +206,20 @@
             } 
         }
 
+        public function updateUserPassword($password, $userId) {
+            try {              
+                $stmt = $this->db->prepare("call sp_updateUserPassword(:userPassword, :uid)");
+                $stmt->bindParam(':userPassword', $password, PDO::PARAM_STR);
+                $stmt->bindParam(':uid', $userId, PDO::PARAM_STR);
+                $stmt->execute(); 
+                $user = $stmt->fetch(PDO::FETCH_ASSOC); 
+                return $user; 
+            } catch (PDOException $e) { 
+                echo "Error: " . $e->getMessage();
+                return false; // Error
+            } 
+        }
+
 
         public function updateUser($email, $password, $userId) {
             try {              
