@@ -15,10 +15,9 @@ function creationEmail($email, $first_name, $password) {
         <p>You can log in to your account using this link: <a href='https://accounts-management.vercel.app/login'>https://accounts-management.vercel.app/login</a></p>
         <br />
         <p>Best regards,</p>
-        <p>AMS</p>
+        <p>AMS Team</p>
     "; 
     $headers = "From: noreply@halcyonagile.com";  
-    $headers .= "MIME-Version: 1.0\r\n";
     $headers .= "Content-type: text/html; charset=utf-8\r\n";
     $headers .= "Reply-To: $replyTo\r\n";
 

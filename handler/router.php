@@ -38,7 +38,7 @@
             $user_status = isset($_POST['user_status']) ? $_POST['user_status'] : '';
 
 
-            creationEmail($email, $first_name, $password);  
+            creationEmail($email, $first_name, $_POST['password']);  
 
 
             $userInfo = array(
