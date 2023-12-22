@@ -17,7 +17,11 @@ function creationEmail($email, $first_name, $password) {
         <p>Best regards,</p>
         <p>AMS Team</p>
     "; 
-    $headers = "From: noreply@halcyonagile.com";  
+
+    $fromName = "AMS Notifications";
+    $fromEmail = "noreply@halcyonagile.com";
+    $headers = "From: $fromName <$fromEmail>\r\n";
+    $headers .= "MIME-Version: 1.0\r\n";
     $headers .= "Content-type: text/html; charset=utf-8\r\n";
     $headers .= "Reply-To: $replyTo\r\n";
 
